@@ -10,9 +10,9 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
   formatDetection: { telephone: false, date: false, email: false, address: false },
-  title: "QE Command Center | Quality Engineering Portfolio",
+  title: "Rao Muhammad Ali | SQA Engineer",
   description:
-    "Enterprise-grade Quality Engineering Command Center. Real-time telemetry, chaos engineering, 3D visualizations, and advanced testing methodology.",
+    "Rao Muhammad Ali — Software Quality Assurance Engineer. Enterprise-grade Quality Engineering Command Center with real-time telemetry, chaos engineering, 3D visualizations, and advanced testing methodology.",
   keywords: [
     "quality engineering",
     "test automation",
@@ -21,8 +21,8 @@ export const metadata: Metadata = {
     "mutation testing",
   ],
   openGraph: {
-    title: "QE Command Center",
-    description: "Enterprise Quality Engineering Portfolio",
+    title: "Rao Muhammad Ali | SQA Engineer",
+    description: "Software Quality Assurance Engineer — Quality Engineering Command Center Portfolio",
     type: "website",
   },
 };
