@@ -69,7 +69,7 @@ const INITIAL_STAGES: PipelineStage[] = [
   },
   {
     id: "unit",
-    label: "Unit Tests",
+    label: "Functional Unit Tests",
     icon: <Check size={14} />,
     color: "#10b981",
     status: "passed",
@@ -81,7 +81,7 @@ const INITIAL_STAGES: PipelineStage[] = [
   },
   {
     id: "mutation",
-    label: "Mutation Score",
+    label: "Regression Analysis",
     icon: <Activity size={14} />,
     color: "#f59e0b",
     status: "passed",
@@ -93,7 +93,7 @@ const INITIAL_STAGES: PipelineStage[] = [
   },
   {
     id: "integration",
-    label: "Integration",
+    label: "API Integration (Postman)",
     icon: <GitBranch size={14} />,
     color: "#06b6d4",
     status: "running",
@@ -105,7 +105,7 @@ const INITIAL_STAGES: PipelineStage[] = [
   },
   {
     id: "e2e",
-    label: "E2E Playwright",
+    label: "E2E Playwright — Veridat",
     icon: <Terminal size={14} />,
     color: "#10b981",
     status: "idle",
@@ -116,7 +116,7 @@ const INITIAL_STAGES: PipelineStage[] = [
   },
   {
     id: "security",
-    label: "OWASP Security",
+    label: "Auth & RBAC Security Scan",
     icon: <Lock size={14} />,
     color: "#ef4444",
     status: "idle",
@@ -132,485 +132,360 @@ const CHAOS_EVENTS: ChaosEvent[] = [
     id: "ce-001",
     type: "network-partition",
     severity: "critical",
-    target: "api-gateway-pod-3",
+    target: "Veridat API Gateway",
     startedAt: "14:22:07",
     duration: 30,
     status: "resolved",
-    impact: "P99 latency spiked to 847ms, 3 retries triggered",
+    impact: "Dataset upload timeout — validating retry logic",
   },
   {
     id: "ce-002",
-    type: "cpu-spike",
+    type: "latency-inject",
     severity: "high",
-    target: "test-runner-node-2",
+    target: "Stripe Payment Service",
     startedAt: "14:31:44",
     duration: 60,
     status: "active",
-    impact: "CPU at 94%, test throughput degraded 38%",
+    impact: "KYC verification delay — testing timeout handling",
   },
   {
     id: "ce-003",
-    type: "latency-inject",
+    type: "cpu-spike",
     severity: "medium",
-    target: "postgres-primary",
+    target: "Desktop App Runner (macOS)",
     startedAt: "14:38:12",
     duration: 45,
     status: "active",
-    impact: "DB query latency +200ms, connection pool pressure",
+    impact: "Cross-platform stability under CPU stress",
   },
   {
     id: "ce-004",
-    type: "pod-kill",
+    type: "memory-leak",
     severity: "high",
-    target: "worker-shard-7",
+    target: "Chat WebSocket Service",
     startedAt: "14:45:00",
     duration: 15,
     status: "pending",
-    impact: "Scheduled: validate graceful failover",
-  },
-  {
-    id: "ce-005",
-    type: "memory-leak",
-    severity: "medium",
-    target: "cache-layer-redis",
-    startedAt: "14:18:33",
-    duration: 120,
-    status: "resolved",
-    impact: "Memory climbed to 87%, eviction policy triggered",
+    impact: "Real-time message persistence under memory pressure",
   },
 ];
 
 const GATE_RULES: GateRule[] = [
   {
     id: "gr-001",
-    name: "Unit Test Pass Rate",
-    condition: ">=",
+    name: "Pass Rate",
+    condition: "Pass Rate ≥ 95%",
     threshold: "95%",
-    currentValue: "99.8%",
+    currentValue: "97.2%",
     status: "pass",
     blocking: true,
   },
   {
     id: "gr-002",
-    name: "Code Coverage",
-    condition: ">=",
-    threshold: "90%",
-    currentValue: "94.2%",
-    status: "pass",
-    blocking: true,
-  },
-  {
-    id: "gr-003",
-    name: "Mutation Score",
-    condition: ">=",
-    threshold: "85%",
-    currentValue: "90.0%",
-    status: "pass",
-    blocking: true,
-  },
-  {
-    id: "gr-004",
-    name: "P99 Latency",
-    condition: "<=",
+    name: "API Response Time",
+    condition: "API Response Time < 500ms",
     threshold: "500ms",
     currentValue: "142ms",
     status: "pass",
     blocking: true,
   },
   {
-    id: "gr-005",
-    name: "Critical Vulnerabilities",
-    condition: "==",
+    id: "gr-003",
+    name: "Auth Failures",
+    condition: "Zero Critical Auth Failures",
     threshold: "0",
     currentValue: "0",
     status: "pass",
     blocking: true,
   },
   {
-    id: "gr-006",
-    name: "Flakiness Index",
-    condition: "<=",
-    threshold: "2%",
-    currentValue: "3.1%",
-    status: "fail",
-    blocking: false,
-  },
-  {
-    id: "gr-007",
-    name: "Bundle Size Delta",
-    condition: "<=",
-    threshold: "+5%",
-    currentValue: "+1.2%",
+    id: "gr-004",
+    name: "Cross-Platform Coverage",
+    condition: "Cross-Platform Coverage Complete",
+    threshold: "PASS",
+    currentValue: "PASS",
     status: "pass",
     blocking: false,
   },
-  {
-    id: "gr-008",
-    name: "Accessibility Score",
-    condition: ">=",
-    threshold: "90",
-    currentValue: "87",
-    status: "warn",
-    blocking: false,
-  },
 ];
 
-const FAULT_TYPES: { type: FaultType; label: string; icon: React.ReactNode; description: string }[] = [
-  {
-    type: "network-partition",
-    label: "Network Partition",
-    icon: <Network size={16} />,
-    description: "Simulate network split between service pods",
-  },
-  {
-    type: "cpu-spike",
-    label: "CPU Spike",
-    icon: <Cpu size={16} />,
-    description: "Inject 90% CPU load on target node",
-  },
-  {
-    type: "memory-leak",
-    label: "Memory Leak",
-    icon: <Database size={16} />,
-    description: "Gradually consume heap until OOM threshold",
-  },
-  {
-    type: "latency-inject",
-    label: "Latency Injection",
-    icon: <Clock size={16} />,
-    description: "Add 200-800ms jitter to outbound requests",
-  },
-  {
-    type: "pod-kill",
-    label: "Pod Kill",
-    icon: <Zap size={16} />,
-    description: "Terminate a random pod in the target namespace",
-  },
-  {
-    type: "disk-io",
-    label: "Disk I/O Saturation",
-    icon: <Activity size={16} />,
-    description: "Saturate disk I/O to trigger queue buildup",
-  },
+const INITIAL_TERMINAL: TerminalLine[] = [
+  { id: 1, ts: "14:20:01", level: "info", msg: "[PIPELINE] Initializing QA gate — Veridat platform build #4821" },
+  { id: 2, ts: "14:20:03", level: "success", msg: "[LINT] ESLint + Prettier checks passed — 0 violations" },
+  { id: 3, ts: "14:20:51", level: "success", msg: "[UNIT] Functional tests complete — 2841/2847 passed" },
+  { id: 4, ts: "14:23:18", level: "success", msg: "[REGRESSION] Analysis complete — coverage 90.0%" },
+  { id: 5, ts: "14:23:19", level: "info", msg: "[API] Postman collection executing — 412 requests queued" },
+  { id: 6, ts: "14:31:44", level: "warn", msg: "[CHAOS] Latency inject → Stripe Payment Service — KYC delay detected" },
+  { id: 7, ts: "14:38:12", level: "warn", msg: "[CHAOS] CPU spike → Desktop App Runner (macOS) — monitoring stability" },
+  { id: 8, ts: "14:45:00", level: "warn", msg: "[CHAOS] Memory leak → Chat WebSocket Service — persistence test active" },
+  { id: 9, ts: "14:45:01", level: "info", msg: "[E2E] Playwright queued — Veridat end-to-end suite pending API gate" },
+  { id: 10, ts: "14:45:02", level: "info", msg: "[SECURITY] Auth & RBAC scan scheduled — awaiting E2E completion" },
 ];
 
-const INITIAL_TERMINAL_LINES: TerminalLine[] = [
-  { id: 1, ts: "14:38:01.002", level: "info", msg: "[pipeline] Stage: integration — spawning 8 workers" },
-  { id: 2, ts: "14:38:01.114", level: "info", msg: "[worker-1] Connecting to test-db-replica-2:5432" },
-  { id: 3, ts: "14:38:01.887", level: "success", msg: "[worker-1] DB connection established (pool: 10/10)" },
-  { id: 4, ts: "14:38:02.003", level: "info", msg: "[worker-2] Loading fixture: users.seed.json (2,400 rows)" },
-  { id: 5, ts: "14:38:02.441", level: "info", msg: "[chaos] Fault active: latency-inject → postgres-primary +200ms" },
-  { id: 6, ts: "14:38:03.112", level: "warn", msg: "[worker-3] Query timeout warning: 480ms (threshold: 500ms)" },
-  { id: 7, ts: "14:38:03.889", level: "success", msg: "[worker-1] PASS: POST /api/v2/auth/login → 201 (87ms)" },
-  { id: 8, ts: "14:38:04.001", level: "success", msg: "[worker-2] PASS: GET /api/v2/users?page=1 → 200 (142ms)" },
-  { id: 9, ts: "14:38:04.334", level: "error", msg: "[worker-4] FAIL: DELETE /api/v2/sessions/:id → 500 (timeout)" },
-  { id: 10, ts: "14:38:04.778", level: "info", msg: "[chaos] Resilience check: retry #1 of 3 for worker-4" },
+const EXTRA_TERMINAL: TerminalLine[] = [
+  { id: 11, ts: "14:45:10", level: "info", msg: "[API] Validating dataset upload endpoints — large file handling" },
+  { id: 12, ts: "14:45:14", level: "success", msg: "[API] Google Drive import flow — 200 OK (138ms)" },
+  { id: 13, ts: "14:45:18", level: "success", msg: "[API] OneDrive cloud import — 200 OK (161ms)" },
+  { id: 14, ts: "14:45:22", level: "warn", msg: "[API] Malware scan endpoint — elevated response time 487ms" },
+  { id: 15, ts: "14:45:30", level: "success", msg: "[API] Stripe KYC onboarding flow — buyer verification passed" },
+  { id: 16, ts: "14:45:35", level: "success", msg: "[API] OTP verification endpoint — session token valid" },
+  { id: 17, ts: "14:45:40", level: "info", msg: "[API] Role-based access control — admin panel routes validated" },
+  { id: 18, ts: "14:45:45", level: "success", msg: "[API] Real-time chat WebSocket — message ordering confirmed" },
+  { id: 19, ts: "14:45:50", level: "success", msg: "[API] Encryption/decryption flow — dataset integrity verified" },
+  { id: 20, ts: "14:45:55", level: "info", msg: "[E2E] Playwright launching — Veridat platform full suite" },
 ];
 
-const STREAM_LINES = [
-  { level: "success" as const, msg: "[worker-1] PASS: GET /api/v2/products?limit=50 → 200 (98ms)" },
-  { level: "success" as const, msg: "[worker-2] PASS: POST /api/v2/cart/items → 201 (134ms)" },
-  { level: "info" as const, msg: "[worker-5] Executing: checkout.flow.spec.ts — step 3/12" },
-  { level: "warn" as const, msg: "[chaos] CPU spike detected on test-runner-node-2: 94%" },
-  { level: "success" as const, msg: "[worker-3] PASS: PATCH /api/v2/users/:id → 200 (67ms)" },
-  { level: "error" as const, msg: "[worker-6] FAIL: WebSocket connection dropped after 3s" },
-  { level: "info" as const, msg: "[worker-7] Assertion: expect(response.body.items).toHaveLength(12)" },
-  { level: "success" as const, msg: "[worker-8] PASS: DELETE /api/v2/cart/items/:id → 204 (45ms)" },
-  { level: "info" as const, msg: "[pipeline] Progress: 389/412 integration tests complete (94.4%)" },
-  { level: "warn" as const, msg: "[worker-4] Retry #2: POST /api/v2/payments → 503 (upstream fault)" },
-  { level: "success" as const, msg: "[worker-1] PASS: GET /api/v2/orders?status=pending → 200 (211ms)" },
-  { level: "info" as const, msg: "[chaos] Fault resolved: network-partition on api-gateway-pod-3" },
-];
+// ─── Store (inline mock — mirrors real Zustand shape) ─────────────────────────
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
+function useMetricsStore() {
+  const [systemHealth, setSystemHealth] = useState(94.7);
+  const [p99Latency, setP99Latency] = useState(142);
+  const [passedCount, setPassedCount] = useState(8421);
+  const [failedCount, setFailedCount] = useState(37);
+  const [isFaultInjected, setIsFaultInjected] = useState(false);
+  const [faultIntensity, setFaultIntensity] = useState(0);
 
-const statusColors: Record<StageStatus, string> = {
-  idle: "#3f3f46",
-  running: "#06b6d4",
-  passed: "#10b981",
-  failed: "#ef4444",
-  skipped: "#f59e0b",
-};
+  const triggerChaosEvent = useCallback((intensity: number) => {
+    setFaultIntensity(intensity);
+    setIsFaultInjected(true);
+    setSystemHealth((h) => Math.max(20, h - intensity * 0.4));
+    setP99Latency((l) => Math.min(9999, l + intensity * 12));
+    setFailedCount((c) => c + Math.floor(intensity * 0.3));
+    setTimeout(() => {
+      setIsFaultInjected(false);
+      setSystemHealth((h) => Math.min(99, h + intensity * 0.15));
+      setP99Latency((l) => Math.max(80, l - intensity * 6));
+    }, 4000);
+  }, []);
 
-const statusIcons: Record<StageStatus, React.ReactNode> = {
-  idle: <Circle size={12} />,
-  running: <Activity size={12} className="animate-pulse" />,
-  passed: <CheckCircle size={12} />,
-  failed: <X size={12} />,
-  skipped: <ChevronRight size={12} />,
-};
+  const injectFault = useCallback((type: string) => {
+    setIsFaultInjected(true);
+    setSystemHealth((h) => Math.max(15, h - 18));
+    setP99Latency((l) => Math.min(9999, l + 380));
+    setFailedCount((c) => c + 12);
+    setTimeout(() => {
+      setIsFaultInjected(false);
+      setSystemHealth((h) => Math.min(99, h + 10));
+      setP99Latency((l) => Math.max(80, l - 200));
+    }, 5000);
+  }, []);
 
-const severityColors: Record<Severity, string> = {
+  return {
+    systemHealth,
+    p99Latency,
+    passedCount,
+    failedCount,
+    isFaultInjected,
+    faultIntensity,
+    triggerChaosEvent,
+    injectFault,
+  };
+}
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+function formatTs(date: Date): string {
+  const h = date.getHours().toString().padStart(2, "0");
+  const min = date.getMinutes().toString().padStart(2, "0");
+  const s = date.getSeconds().toString().padStart(2, "0");
+  return `${h}:${min}:${s}`;
+}
+
+const SEVERITY_COLORS: Record<string, string> = {
   low: "#10b981",
   medium: "#f59e0b",
   high: "#f97316",
   critical: "#ef4444",
 };
 
-const levelColors: Record<TerminalLine["level"], string> = {
-  info: "#94a3b8",
+const SEVERITY_BG: Record<string, string> = {
+  low: "rgba(16,185,129,0.08)",
+  medium: "rgba(245,158,11,0.08)",
+  high: "rgba(249,115,22,0.08)",
+  critical: "rgba(239,68,68,0.08)",
+};
+
+const STATUS_COLORS: Record<StageStatus, string> = {
+  idle: "#3f3f46",
+  running: "#f59e0b",
+  passed: "#10b981",
+  failed: "#ef4444",
+  skipped: "#6b7280",
+};
+
+const TERMINAL_COLORS: Record<string, string> = {
+  info: "#06b6d4",
   warn: "#f59e0b",
   error: "#ef4444",
   success: "#10b981",
 };
 
-const pulseVariant: Variants = {
-  hidden: { opacity: 0, scale: 0.95 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    transition: { type: "spring", stiffness: 120, damping: 14 },
-  },
-};
+// ─── Sub-components ───────────────────────────────────────────────────────────
 
-const rowVariant: Variants = {
-  hidden: { opacity: 0, x: -16 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: { type: "spring", stiffness: 100, damping: 18 },
-  },
-};
-
-// ─── Sparkline ────────────────────────────────────────────────────────────────
-
-function Sparkline({ data, color, height = 32 }: { data: number[]; color: string; height?: number }) {
-  if (!data || data.length < 2) return null;
-  const max = Math.max(...data, 1);
-  const min = Math.min(...data, 0);
-  const range = max - min || 1;
-  const w = 120;
-  const h = height;
-  const pts = data
-    .map((v, i) => {
-      const x = (i / (data.length - 1)) * w;
-      const y = h - ((v - min) / range) * h;
-      return `${x},${y}`;
-    })
-    .join(" ");
-  const areaPath = `M0,${h} L${pts.split(" ").map((p) => p).join(" L")} L${w},${h} Z`;
-  return (
-    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="overflow-visible">
-      <defs>
-        <linearGradient id={`sg-${color.replace("#", "")}`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity="0.3" />
-          <stop offset="100%" stopColor={color} stopOpacity="0.02" />
-        </linearGradient>
-      </defs>
-      <path d={areaPath} fill={`url(#sg-${color.replace("#", "")})`} />
-      <polyline points={pts} fill="none" stroke={color} strokeWidth="1.5" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-// ─── Pipeline Stage Card ──────────────────────────────────────────────────────
-
-function StageCard({ stage, index }: { stage: PipelineStage; index: number }) {
-  const color = statusColors[stage.status];
+function StageNode({ stage, index, isActive }: { stage: PipelineStage; index: number; isActive: boolean }) {
+  const statusColor = STATUS_COLORS[stage.status];
   const isRunning = stage.status === "running";
 
   return (
     <motion.div
-      variants={rowVariant}
-      whileHover={{ scale: 1.02, y: -2 }}
-      className="relative rounded-xl p-4 cursor-default"
+      variants={scaleIn}
+      className="flex flex-col items-center gap-2 relative"
+    >
+      {/* Connector line */}
+      {index > 0 && (
+        <div
+          className="absolute left-0 top-6 w-full h-px -translate-x-1/2"
+          style={{
+            background: `linear-gradient(90deg, ${statusColor}40, ${statusColor}20)`,
+            width: "calc(100% + 1rem)",
+            left: "-50%",
+          }}
+        />
+      )}
+
+      {/* Node circle */}
+      <motion.div
+        className="relative w-12 h-12 rounded-full flex items-center justify-center border-2 z-10"
+        style={{
+          borderColor: statusColor,
+          backgroundColor: `${statusColor}15`,
+          boxShadow: isRunning ? `0 0 20px ${statusColor}60` : `0 0 8px ${statusColor}30`,
+        }}
+        animate={isRunning ? { scale: [1, 1.08, 1], opacity: [1, 0.8, 1] } : {}}
+        transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <span style={{ color: statusColor }}>{stage.icon}</span>
+        {isRunning && (
+          <motion.div
+            className="absolute inset-0 rounded-full border-2"
+            style={{ borderColor: statusColor }}
+            animate={{ scale: [1, 1.5], opacity: [0.6, 0] }}
+            transition={{ duration: 1.2, repeat: Infinity }}
+          />
+        )}
+      </motion.div>
+
+      {/* Label */}
+      <div className="text-center">
+        <div className="text-[10px] font-mono font-bold uppercase tracking-wider" style={{ color: statusColor }}>
+          {stage.label}
+        </div>
+        <div className="text-[9px] font-mono text-zinc-600 mt-0.5">
+          {stage.status === "running" ? "IN PROGRESS" : stage.status.toUpperCase()}
+        </div>
+        {stage.duration !== null && (
+          <div className="text-[9px] font-mono text-zinc-500">{stage.duration}s</div>
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
+function ChaosEventCard({ event }: { event: ChaosEvent }) {
+  const sevColor = SEVERITY_COLORS[event.severity];
+  const sevBg = SEVERITY_BG[event.severity];
+
+  return (
+    <motion.div
+      variants={fadeInUp}
+      className="rounded-lg border p-3 font-mono"
       style={{
-        background: "rgba(9,9,11,0.7)",
-        border: `1px solid ${color}30`,
-        boxShadow: isRunning ? `0 0 16px ${color}20` : "none",
+        borderColor: `${sevColor}30`,
+        backgroundColor: sevBg,
       }}
     >
-      {isRunning && (
-        <motion.div
-          className="absolute inset-0 rounded-xl"
-          animate={{ opacity: [0.3, 0.7, 0.3] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-          style={{ border: `1px solid ${color}60`, borderRadius: "inherit" }}
-        />
-      )}
-
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-start justify-between gap-2 mb-2">
         <div className="flex items-center gap-2">
-          <span style={{ color: stage.color }}>{stage.icon}</span>
-          <span className="text-xs font-mono font-semibold text-zinc-200">{stage.label}</span>
+          <div
+            className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+            style={{ backgroundColor: sevColor, boxShadow: `0 0 6px ${sevColor}` }}
+          />
+          <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: sevColor }}>
+            {event.type.replace("-", " ")}
+          </span>
         </div>
-        <div className="flex items-center gap-1.5" style={{ color }}>
-          {statusIcons[stage.status]}
-          <span className="text-[10px] font-mono uppercase tracking-wider">{stage.status}</span>
-        </div>
+        <span
+          className="text-[9px] px-1.5 py-0.5 rounded border uppercase tracking-wider"
+          style={{
+            color: event.status === "active" ? "#f59e0b" : event.status === "resolved" ? "#10b981" : "#6b7280",
+            borderColor: event.status === "active" ? "#f59e0b40" : event.status === "resolved" ? "#10b98140" : "#6b728040",
+            backgroundColor: event.status === "active" ? "#f59e0b10" : event.status === "resolved" ? "#10b98110" : "#6b728010",
+          }}
+        >
+          {event.status}
+        </span>
       </div>
-
-      {stage.tests > 0 && (
-        <div className="space-y-1.5">
-          <div className="flex justify-between text-[10px] font-mono text-zinc-500">
-            <span>{stage.passed} passed</span>
-            {stage.failed > 0 && <span style={{ color: "#ef4444" }}>{stage.failed} failed</span>}
-            <span>{stage.tests} total</span>
-          </div>
-          <div className="h-1 rounded-full bg-zinc-800 overflow-hidden">
-            <motion.div
-              className="h-full rounded-full"
-              style={{ backgroundColor: color }}
-              initial={{ width: 0 }}
-              animate={{ width: `${stage.tests > 0 ? (stage.passed / stage.tests) * 100 : 0}%` }}
-              transition={{ duration: 1, ease: "easeOut", delay: index * 0.1 }}
-            />
-          </div>
-          {stage.coverage !== undefined && (
-            <div className="text-[10px] font-mono text-zinc-500">
-              Coverage: <span style={{ color: stage.color }}>{stage.coverage.toFixed(1)}%</span>
-            </div>
-          )}
-        </div>
-      )}
-
-      {stage.duration !== null && (
-        <div className="mt-2 text-[10px] font-mono text-zinc-600">
-          <Clock size={9} className="inline mr-1" />
-          {stage.duration}s
-        </div>
-      )}
+      <div className="text-[11px] text-zinc-300 mb-1">
+        <span className="text-zinc-500">TARGET: </span>{event.target}
+      </div>
+      <div className="text-[10px] text-zinc-500 mb-2">{event.impact}</div>
+      <div className="flex items-center justify-between text-[9px] text-zinc-600">
+        <span>{event.startedAt}</span>
+        <span>{event.duration}s duration</span>
+      </div>
     </motion.div>
   );
 }
-
-// ─── Chaos Event Row ──────────────────────────────────────────────────────────
-
-function ChaosEventRow({ event }: { event: ChaosEvent }) {
-  const [expanded, setExpanded] = useState(false);
-  const sevColor = severityColors[event.severity];
-  const statusMap = {
-    active: { color: "#ef4444", label: "ACTIVE" },
-    resolved: { color: "#10b981", label: "RESOLVED" },
-    pending: { color: "#f59e0b", label: "PENDING" },
-  };
-  const st = statusMap[event.status];
-
-  return (
-    <motion.div
-      variants={rowVariant}
-      className="rounded-lg overflow-hidden"
-      style={{ border: "1px solid rgba(255,255,255,0.06)", background: "rgba(9,9,11,0.5)" }}
-    >
-      <button
-        onClick={() => setExpanded((e) => !e)}
-        className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-white/[0.02] transition-colors"
-      >
-        <div
-          className="w-2 h-2 rounded-full flex-shrink-0"
-          style={{ backgroundColor: sevColor, boxShadow: `0 0 6px ${sevColor}` }}
-        />
-        <span className="text-[10px] font-mono text-zinc-500 w-20 flex-shrink-0">{event.startedAt}</span>
-        <span className="text-xs font-mono text-zinc-300 flex-1">{event.type}</span>
-        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full border" style={{ color: sevColor, borderColor: `${sevColor}40`, background: `${sevColor}10` }}>
-          {event.severity}
-        </span>
-        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full border ml-2" style={{ color: st.color, borderColor: `${st.color}40`, background: `${st.color}10` }}>
-          {st.label}
-        </span>
-        <ChevronDown size={12} className={`text-zinc-600 transition-transform ml-2 ${expanded ? "rotate-180" : ""}`} />
-      </button>
-      <AnimatePresence>
-        {expanded && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25, ease: "easeOut" }}
-            className="overflow-hidden"
-          >
-            <div className="px-4 pb-3 pt-1 grid grid-cols-2 gap-3 border-t border-white/5">
-              <div>
-                <div className="text-[9px] font-mono text-zinc-600 uppercase tracking-widest mb-1">Target</div>
-                <div className="text-xs font-mono text-cyan-400">{event.target}</div>
-              </div>
-              <div>
-                <div className="text-[9px] font-mono text-zinc-600 uppercase tracking-widest mb-1">Duration</div>
-                <div className="text-xs font-mono text-zinc-300">{event.duration}s</div>
-              </div>
-              <div className="col-span-2">
-                <div className="text-[9px] font-mono text-zinc-600 uppercase tracking-widest mb-1">Impact</div>
-                <div className="text-xs font-mono text-zinc-400">{event.impact}</div>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
-  );
-}
-
-// ─── Gate Rule Row ────────────────────────────────────────────────────────────
 
 function GateRuleRow({ rule }: { rule: GateRule }) {
-  const colors = { pass: "#10b981", fail: "#ef4444", warn: "#f59e0b" };
-  const icons = {
-    pass: <CheckCircle size={13} />,
-    fail: <X size={13} />,
-    warn: <AlertTriangle size={13} />,
-  };
-  const c = colors[rule.status];
+  const statusColor = rule.status === "pass" ? "#10b981" : rule.status === "warn" ? "#f59e0b" : "#ef4444";
 
   return (
     <motion.div
-      variants={rowVariant}
-      className="flex items-center gap-3 px-4 py-2.5 rounded-lg"
-      style={{ background: "rgba(9,9,11,0.4)", border: "1px solid rgba(255,255,255,0.05)" }}
-      whileHover={{ backgroundColor: "rgba(255,255,255,0.02)" }}
+      variants={fadeInUp}
+      className="flex items-center justify-between py-2.5 border-b font-mono"
+      style={{ borderColor: "rgba(63,63,70,0.4)" }}
     >
-      <span style={{ color: c }}>{icons[rule.status]}</span>
-      <span className="text-xs font-mono text-zinc-300 flex-1">{rule.name}</span>
-      <span className="text-[10px] font-mono text-zinc-600">
-        {rule.condition} {rule.threshold}
-      </span>
-      <span className="text-xs font-mono tabular-nums" style={{ color: c }}>
-        {rule.currentValue}
-      </span>
-      {rule.blocking && (
-        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded border border-red-500/30 text-red-400 bg-red-500/10">
-          BLOCKING
+      <div className="flex items-center gap-3">
+        <div
+          className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+          style={{ backgroundColor: statusColor, boxShadow: `0 0 6px ${statusColor}` }}
+        />
+        <div>
+          <div className="text-[11px] text-zinc-300">{rule.condition}</div>
+          {rule.blocking && (
+            <div className="text-[9px] text-zinc-600 uppercase tracking-wider">BLOCKING GATE</div>
+          )}
+        </div>
+      </div>
+      <div className="flex items-center gap-3">
+        <span className="text-[11px] font-bold tabular-nums" style={{ color: statusColor }}>
+          {rule.currentValue}
         </span>
-      )}
+        <span
+          className="text-[9px] px-1.5 py-0.5 rounded border uppercase"
+          style={{
+            color: statusColor,
+            borderColor: `${statusColor}40`,
+            backgroundColor: `${statusColor}10`,
+          }}
+        >
+          {rule.status}
+        </span>
+      </div>
     </motion.div>
   );
 }
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
-export default function PipelinePage() {
+export default function ChaosEngineeringPage() {
+  const metrics = useMetricsStore();
   const [stages, setStages] = useState<PipelineStage[]>(INITIAL_STAGES);
-  const [terminalLines, setTerminalLines] = useState<TerminalLine[]>(INITIAL_TERMINAL_LINES);
-  const [selectedFault, setSelectedFault] = useState<FaultType>("network-partition");
-  const [selectedTarget, setSelectedTarget] = useState("api-gateway-pod-3");
-  const [faultDuration, setFaultDuration] = useState("30");
   const [chaosEvents, setChaosEvents] = useState<ChaosEvent[]>(CHAOS_EVENTS);
-  const [pipelineRunning, setPipelineRunning] = useState(true);
-  const [gateStatus, setGateStatus] = useState<"open" | "blocked" | "evaluating">("evaluating");
-  const [sparkData, setSparkData] = useState<number[]>([40, 55, 48, 62, 58, 71, 65, 80, 74, 88, 82, 91, 85, 78, 83]);
+  const [terminalLines, setTerminalLines] = useState<TerminalLine[]>(INITIAL_TERMINAL);
+  const [isRunning, setIsRunning] = useState(false);
+  const [runProgress, setRunProgress] = useState(0);
+  const [sliders, setSliders] = useState({
+    packetLoss: 0,
+    jitterMs: 0,
+    cpuStarvation: 0,
+    memoryStarvation: 0,
+  });
+  const [activeTab, setActiveTab] = useState<"pipeline" | "chaos" | "gates">("pipeline");
   const terminalRef = useRef<HTMLDivElement>(null);
-  const lineCounterRef = useRef(11);
-  const streamIndexRef = useRef(0);
-
-  // Simulate terminal streaming
-  useEffect(() => {
-    const id = setInterval(() => {
-      const template = STREAM_LINES[streamIndexRef.current % STREAM_LINES.length];
-      streamIndexRef.current += 1;
-      const now = new Date();
-      const ts = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")}.${String(now.getMilliseconds()).padStart(3, "0")}`;
-      const newLine: TerminalLine = {
-        id: lineCounterRef.current++,
-        ts,
-        level: template.level,
-        msg: template.msg,
-      };
-      setTerminalLines((prev) => {
-        const next = [...prev, newLine];
-        return next.length > 80 ? next.slice(-80) : next;
-      });
-    }, 900);
-    return () => clearInterval(id);
-  }, []);
+  const extraLineIdx = useRef(0);
+  const lineCounter = useRef(INITIAL_TERMINAL.length + 1);
 
   // Auto-scroll terminal
   useEffect(() => {
@@ -619,602 +494,629 @@ export default function PipelinePage() {
     }
   }, [terminalLines]);
 
-  // Sparkline update
+  // Stream extra terminal lines
   useEffect(() => {
     const id = setInterval(() => {
-      setSparkData((prev) => {
-        const last = prev[prev.length - 1] ?? 70;
-        const next = Math.min(100, Math.max(10, last + (Math.random() - 0.45) * 12));
-        const arr = [...prev, next];
-        return arr.length > 20 ? arr.slice(-20) : arr;
-      });
-    }, 1200);
+      if (extraLineIdx.current < EXTRA_TERMINAL.length) {
+        const line = EXTRA_TERMINAL[extraLineIdx.current];
+        setTerminalLines((prev) => [
+          ...prev.slice(-60),
+          { ...line, id: lineCounter.current++, ts: formatTs(new Date()) },
+        ]);
+        extraLineIdx.current++;
+      }
+    }, 2200);
     return () => clearInterval(id);
   }, []);
 
-  // Gate evaluation
-  useEffect(() => {
-    const failCount = GATE_RULES.filter((r) => r.status === "fail" && r.blocking).length;
-    if (failCount > 0) {
-      setGateStatus("blocked");
-    } else {
-      const timer = setTimeout(() => setGateStatus("open"), 2000);
-      return () => clearTimeout(timer);
-    }
-  }, []);
+  // Pipeline run simulation
+  const handleRunPipeline = useCallback(() => {
+    if (isRunning) return;
+    setIsRunning(true);
+    setRunProgress(0);
 
-  const handleInjectFault = useCallback(() => {
-    const faultDef = FAULT_TYPES.find((f) => f.type === selectedFault);
-    const newEvent: ChaosEvent = {
-      id: `ce-${Date.now()}`,
-      type: selectedFault,
-      severity: "high",
-      target: selectedTarget || "unknown-target",
-      startedAt: (() => {
-        const n = new Date();
-        return `${String(n.getHours()).padStart(2, "0")}:${String(n.getMinutes()).padStart(2, "0")}:${String(n.getSeconds()).padStart(2, "0")}`;
-      })(),
-      duration: parseInt(faultDuration, 10) || 30,
-      status: "active",
-      impact: faultDef?.description ?? "Fault injected",
+    const stageOrder = ["lint", "unit", "mutation", "integration", "e2e", "security"];
+    let stageIdx = 0;
+
+    setStages((prev) =>
+      prev.map((s) => ({ ...s, status: "idle" as StageStatus }))
+    );
+
+    const advance = () => {
+      if (stageIdx >= stageOrder.length) {
+        setIsRunning(false);
+        setRunProgress(100);
+        return;
+      }
+
+      const currentId = stageOrder[stageIdx];
+      setStages((prev) =>
+        prev.map((s) =>
+          s.id === currentId ? { ...s, status: "running" as StageStatus } : s
+        )
+      );
+
+      const duration = 1500 + Math.random() * 2000;
+      setTimeout(() => {
+        const passed = Math.random() > 0.12;
+        setStages((prev) =>
+          prev.map((s) =>
+            s.id === currentId
+              ? { ...s, status: passed ? "passed" : "failed", duration: Math.round(duration / 100) }
+              : s
+          )
+        );
+        setRunProgress(Math.round(((stageIdx + 1) / stageOrder.length) * 100));
+        stageIdx++;
+        if (passed) advance();
+        else {
+          setIsRunning(false);
+          setTerminalLines((prev) => [
+            ...prev,
+            {
+              id: lineCounter.current++,
+              ts: formatTs(new Date()),
+              level: "error",
+              msg: `[GATE FAIL] Stage "${currentId}" failed — pipeline halted`,
+            },
+          ]);
+        }
+      }, duration);
     };
-    setChaosEvents((prev) => [newEvent, ...prev]);
-  }, [selectedFault, selectedTarget, faultDuration]);
 
-  const handleResetPipeline = useCallback(() => {
-    setStages(INITIAL_STAGES.map((s) => ({ ...s, status: "idle" as StageStatus, duration: null })));
-    setPipelineRunning(false);
-    setGateStatus("evaluating");
-  }, []);
+    advance();
+  }, [isRunning]);
 
-  const gateColors = {
-    open: "#10b981",
-    blocked: "#ef4444",
-    evaluating: "#f59e0b",
-  };
-  const gateLabels = {
-    open: "GATE OPEN — DEPLOY APPROVED",
-    blocked: "GATE BLOCKED — DEPLOY REJECTED",
-    evaluating: "EVALUATING QUALITY GATES...",
-  };
+  // Slider change handler
+  const handleSliderChange = useCallback(
+    (key: keyof typeof sliders, value: number) => {
+      setSliders((prev) => ({ ...prev, [key]: value }));
+      const intensity = Math.round(value / 10);
+      if (intensity > 0) {
+        metrics.triggerChaosEvent(intensity);
+        setTerminalLines((prev) => [
+          ...prev.slice(-60),
+          {
+            id: lineCounter.current++,
+            ts: formatTs(new Date()),
+            level: "warn",
+            msg: `[CHAOS] ${key} set to ${value}${key.includes("Ms") ? "ms" : "%"} — fault intensity ${intensity}/10`,
+          },
+        ]);
+      }
+    },
+    [metrics]
+  );
 
-  const passCount = GATE_RULES.filter((r) => r.status === "pass").length;
-  const failCount = GATE_RULES.filter((r) => r.status === "fail").length;
-  const warnCount = GATE_RULES.filter((r) => r.status === "warn").length;
+  const handleInjectFault = useCallback(
+    (type: string) => {
+      metrics.injectFault(type);
+      const newEvent: ChaosEvent = {
+        id: `ce-${Date.now()}`,
+        type: type as FaultType,
+        severity: "critical",
+        target: type === "network-partition" ? "Veridat API Gateway" : type === "latency-inject" ? "Stripe Payment Service" : type === "cpu-spike" ? "Desktop App Runner (macOS)" : "Chat WebSocket Service",
+        startedAt: formatTs(new Date()),
+        duration: 30,
+        status: "active",
+        impact: type === "network-partition" ? "Dataset upload timeout — validating retry logic" : type === "latency-inject" ? "KYC verification delay — testing timeout handling" : type === "cpu-spike" ? "Cross-platform stability under CPU stress" : "Real-time message persistence under memory pressure",
+      };
+      setChaosEvents((prev) => [newEvent, ...prev.slice(0, 7)]);
+      setTerminalLines((prev) => [
+        ...prev.slice(-60),
+        {
+          id: lineCounter.current++,
+          ts: formatTs(new Date()),
+          level: "error",
+          msg: `[FAULT INJECT] ${type} → ${newEvent.target} — CRITICAL`,
+        },
+      ]);
+    },
+    [metrics]
+  );
+
+  const healthColor =
+    metrics.systemHealth > 80 ? "#10b981" : metrics.systemHealth > 50 ? "#f59e0b" : "#ef4444";
 
   return (
-    <main className="min-h-screen text-zinc-100 font-mono" style={{ background: "transparent" }}>
-      {/* Page header */}
+    <div className="min-h-screen bg-[#030303] text-emerald-400 font-mono">
+      {/* Header */}
       <motion.div
-        variants={fadeInUp}
+        variants={staggerContainer}
         initial="hidden"
         animate="visible"
-        className="px-6 pt-8 pb-6 border-b border-white/5"
+        className="px-6 pt-8 pb-6 border-b"
+        style={{ borderColor: "rgba(16,185,129,0.1)" }}
       >
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <Shield size={14} className="text-red-400" />
-              <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">
-                Chaos Engineering
-              </span>
-              <span className="text-zinc-700">/</span>
-              <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">
-                Pipeline Gate
-              </span>
-            </div>
-            <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-zinc-100">
-              Chaos Engineering{" "}
-              <span className="text-red-400">&amp;</span>{" "}
-              Pipeline Gate
-            </h1>
-            <p className="text-sm text-zinc-500 mt-1">
-              Fault injection, resilience validation, and quality gate enforcement for production deployments.
-            </p>
+        <motion.div variants={fadeInUp} className="flex items-center gap-3 mb-1">
+          <div className="flex items-center gap-1.5">
+            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" style={{ boxShadow: "0 0 8px #10b981" }} />
+            <span className="text-[10px] text-zinc-500 uppercase tracking-widest">QA Pipeline Gate</span>
           </div>
+          <div className="h-px flex-1" style={{ background: "rgba(16,185,129,0.15)" }} />
+          <span className="text-[10px] text-zinc-600">Veridat Platform — Build #4821</span>
+        </motion.div>
+        <motion.h1 variants={fadeInUp} className="text-2xl md:text-3xl font-bold text-white mb-1">
+          Chaos Engineering{" "}
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">
+            & Pipeline Gate
+          </span>
+        </motion.h1>
+        <motion.p variants={fadeInUp} className="text-sm text-zinc-500 max-w-2xl">
+          Real-time fault injection and quality gate enforcement for the Veridat data marketplace platform.
+          Playwright E2E, Postman API validation, Auth & RBAC security scanning.
+        </motion.p>
 
-          <div className="flex items-center gap-3">
-            <motion.button
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={handleResetPipeline}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-mono text-zinc-400 border border-zinc-700 hover:border-zinc-500 transition-colors"
-            >
-              <RotateCcw size={12} />
-              Reset
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={() => setPipelineRunning((v) => !v)}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-mono border transition-colors"
-              style={{
-                background: pipelineRunning ? "rgba(239,68,68,0.1)" : "rgba(16,185,129,0.1)",
-                borderColor: pipelineRunning ? "rgba(239,68,68,0.3)" : "rgba(16,185,129,0.3)",
-                color: pipelineRunning ? "#ef4444" : "#10b981",
-              }}
-            >
-              {pipelineRunning ? <Square size={12} /> : <Play size={12} />}
-              {pipelineRunning ? "Stop Pipeline" : "Start Pipeline"}
-            </motion.button>
-          </div>
-        </div>
+        {/* Live metrics strip */}
+        <motion.div variants={fadeInUp} className="flex flex-wrap gap-4 mt-4">
+          {[
+            { label: "System Health", value: `${metrics.systemHealth.toFixed(1)}%`, color: healthColor },
+            { label: "P99 Latency", value: `${metrics.p99Latency}ms`, color: metrics.p99Latency > 500 ? "#ef4444" : "#06b6d4" },
+            { label: "Passed", value: metrics.passedCount.toLocaleString("en-US"), color: "#10b981" },
+            { label: "Failed", value: metrics.failedCount.toLocaleString("en-US"), color: "#ef4444" },
+            { label: "Fault Active", value: metrics.isFaultInjected ? "YES" : "NO", color: metrics.isFaultInjected ? "#ef4444" : "#10b981" },
+          ].map((m) => (
+            <div key={m.label} className="flex items-center gap-2">
+              <div className="w-1 h-1 rounded-full" style={{ backgroundColor: m.color }} />
+              <span className="text-[10px] text-zinc-600 uppercase tracking-wider">{m.label}:</span>
+              <span className="text-[11px] font-bold tabular-nums" style={{ color: m.color }}>{m.value}</span>
+            </div>
+          ))}
+        </motion.div>
       </motion.div>
 
-      <div className="px-6 py-6 space-y-8">
-        {/* Quality Gate Banner */}
+      <div className="px-6 py-6 space-y-6">
+        {/* Tab navigation */}
         <motion.div
-          variants={scaleIn}
-          initial="hidden"
-          animate="visible"
-          className="relative rounded-2xl overflow-hidden"
-          style={{
-            border: `1px solid ${gateColors[gateStatus]}40`,
-            background: `${gateColors[gateStatus]}08`,
-          }}
-        >
-          {gateStatus === "evaluating" && (
-            <motion.div
-              className="absolute inset-0"
-              animate={{ opacity: [0.3, 0.6, 0.3] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              style={{ background: `linear-gradient(90deg, transparent, ${gateColors[gateStatus]}10, transparent)` }}
-            />
-          )}
-          <div className="relative px-6 py-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div
-                className="w-3 h-3 rounded-full"
-                style={{
-                  backgroundColor: gateColors[gateStatus],
-                  boxShadow: `0 0 12px ${gateColors[gateStatus]}`,
-                }}
-              />
-              <span
-                className="text-sm font-mono font-bold tracking-wider"
-                style={{ color: gateColors[gateStatus] }}
-              >
-                {gateLabels[gateStatus]}
-              </span>
-            </div>
-            <div className="flex items-center gap-6">
-              <div className="text-center">
-                <div className="text-lg font-mono font-bold text-emerald-400">{passCount}</div>
-                <div className="text-[9px] text-zinc-600 uppercase tracking-widest">Passed</div>
-              </div>
-              <div className="text-center">
-                <div className="text-lg font-mono font-bold text-amber-400">{warnCount}</div>
-                <div className="text-[9px] text-zinc-600 uppercase tracking-widest">Warnings</div>
-              </div>
-              <div className="text-center">
-                <div className="text-lg font-mono font-bold text-red-400">{failCount}</div>
-                <div className="text-[9px] text-zinc-600 uppercase tracking-widest">Failed</div>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Pipeline Stages */}
-        <section>
-          <motion.div
-            variants={fadeInUp}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-60px" }}
-            className="flex items-center gap-2 mb-4"
-          >
-            <GitBranch size={14} className="text-cyan-400" />
-            <h2 className="text-sm font-mono font-semibold text-zinc-300 uppercase tracking-widest">
-              CI/CD Pipeline Stages
-            </h2>
-            <div className="flex-1 h-px bg-white/5 ml-2" />
-            <span className="text-[10px] font-mono text-zinc-600">
-              {stages.filter((s) => s.status === "passed").length}/{stages.length} complete
-            </span>
-          </motion.div>
-
-          {/* Stage flow connector */}
-          <div className="relative mb-4 hidden md:flex items-center gap-1 px-2">
-            {stages.map((stage, i) => (
-              <div key={stage.id} className="flex items-center flex-1">
-                <div
-                  className="flex-1 h-0.5 rounded-full transition-colors duration-500"
-                  style={{ backgroundColor: statusColors[stage.status] + "60" }}
-                />
-                {i < stages.length - 1 && (
-                  <ChevronRight size={10} style={{ color: statusColors[stage.status] + "80" }} />
-                )}
-              </div>
-            ))}
-          </div>
-
-          <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-40px" }}
-            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3"
-          >
-            {stages.map((stage, i) => (
-              <StageCard key={stage.id} stage={stage} index={i} />
-            ))}
-          </motion.div>
-        </section>
-
-        {/* Two-column: Gate Rules + Chaos Injection */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Quality Gate Rules */}
-          <motion.section
-            variants={slideInLeft}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-60px" }}
-          >
-            <div className="flex items-center gap-2 mb-4">
-              <Shield size={14} className="text-emerald-400" />
-              <h2 className="text-sm font-mono font-semibold text-zinc-300 uppercase tracking-widest">
-                Quality Gate Rules
-              </h2>
-            </div>
-            <motion.div
-              variants={staggerContainer}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              className="space-y-2"
-            >
-              {GATE_RULES.map((rule) => (
-                <GateRuleRow key={rule.id} rule={rule} />
-              ))}
-            </motion.div>
-          </motion.section>
-
-          {/* Chaos Injection Panel */}
-          <motion.section
-            variants={slideInRight}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-60px" }}
-          >
-            <div className="flex items-center gap-2 mb-4">
-              <Zap size={14} className="text-red-400" />
-              <h2 className="text-sm font-mono font-semibold text-zinc-300 uppercase tracking-widest">
-                Fault Injection Console
-              </h2>
-            </div>
-            <div
-              className="rounded-xl p-5 space-y-4"
-              style={{
-                background: "rgba(9,9,11,0.7)",
-                border: "1px solid rgba(239,68,68,0.15)",
-              }}
-            >
-              {/* Fault type selector */}
-              <div>
-                <label className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest block mb-2">
-                  Fault Type
-                </label>
-                <div className="grid grid-cols-2 gap-2">
-                  {FAULT_TYPES.map((ft) => (
-                    <motion.button
-                      key={ft.type}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => setSelectedFault(ft.type)}
-                      className="flex items-center gap-2 px-3 py-2 rounded-lg text-left transition-all"
-                      style={{
-                        background: selectedFault === ft.type ? "rgba(239,68,68,0.12)" : "rgba(255,255,255,0.03)",
-                        border: `1px solid ${selectedFault === ft.type ? "rgba(239,68,68,0.4)" : "rgba(255,255,255,0.06)"}`,
-                        color: selectedFault === ft.type ? "#ef4444" : "#71717a",
-                      }}
-                    >
-                      {ft.icon}
-                      <span className="text-[10px] font-mono">{ft.label}</span>
-                    </motion.button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Target input */}
-              <div>
-                <label className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest block mb-2">
-                  Target Pod / Service
-                </label>
-                <input
-                  type="text"
-                  value={selectedTarget}
-                  onChange={(e) => setSelectedTarget(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg text-xs font-mono text-zinc-300 bg-zinc-900 border border-zinc-700 focus:border-red-500/50 focus:outline-none transition-colors"
-                  placeholder="e.g. api-gateway-pod-3"
-                />
-              </div>
-
-              {/* Duration */}
-              <div>
-                <label className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest block mb-2">
-                  Duration (seconds): {faultDuration}s
-                </label>
-                <input
-                  type="range"
-                  min="5"
-                  max="300"
-                  value={faultDuration}
-                  onChange={(e) => setFaultDuration(e.target.value)}
-                  className="w-full accent-red-500"
-                />
-                <div className="flex justify-between text-[9px] font-mono text-zinc-700 mt-1">
-                  <span>5s</span>
-                  <span>300s</span>
-                </div>
-              </div>
-
-              {/* Inject button */}
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.97 }}
-                onClick={handleInjectFault}
-                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-mono font-bold transition-all"
-                style={{
-                  background: "linear-gradient(135deg, rgba(239,68,68,0.2), rgba(239,68,68,0.08))",
-                  border: "1px solid rgba(239,68,68,0.4)",
-                  color: "#ef4444",
-                  boxShadow: "0 0 20px rgba(239,68,68,0.1)",
-                }}
-              >
-                <Zap size={14} />
-                INJECT FAULT
-              </motion.button>
-
-              {/* Selected fault description */}
-              <div className="text-[10px] font-mono text-zinc-600 text-center">
-                {FAULT_TYPES.find((f) => f.type === selectedFault)?.description}
-              </div>
-            </div>
-          </motion.section>
-        </div>
-
-        {/* Chaos Events Log */}
-        <motion.section
           variants={fadeInUp}
           initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-60px" }}
+          animate="visible"
+          className="flex gap-1 p-1 rounded-lg border"
+          style={{ borderColor: "rgba(63,63,70,0.4)", backgroundColor: "rgba(9,9,11,0.6)" }}
         >
-          <div className="flex items-center gap-2 mb-4">
-            <AlertCircle size={14} className="text-amber-400" />
-            <h2 className="text-sm font-mono font-semibold text-zinc-300 uppercase tracking-widest">
-              Active Chaos Events
-            </h2>
-            <div className="flex-1 h-px bg-white/5 ml-2" />
-            <div className="flex items-center gap-1.5">
-              <div className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
-              <span className="text-[10px] font-mono text-zinc-500">
-                {chaosEvents.filter((e) => e.status === "active").length} active
-              </span>
-            </div>
-          </div>
-          <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="space-y-2"
-          >
-            {chaosEvents.map((event) => (
-              <ChaosEventRow key={event.id} event={event} />
-            ))}
-          </motion.div>
-        </motion.section>
-
-        {/* Telemetry + Terminal row */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-          {/* Telemetry sparklines */}
-          <motion.section
-            variants={slideInLeft}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-60px" }}
-            className="lg:col-span-2"
-          >
-            <div className="flex items-center gap-2 mb-4">
-              <TrendingUp size={14} className="text-cyan-400" />
-              <h2 className="text-sm font-mono font-semibold text-zinc-300 uppercase tracking-widest">
-                Resilience Telemetry
-              </h2>
-            </div>
-            <div className="space-y-3">
-              {[
-                { label: "Throughput RPS", value: "1,847", delta: "+12%", color: "#06b6d4", trend: "up" },
-                { label: "Error Rate", value: "0.8%", delta: "+0.3%", color: "#ef4444", trend: "up" },
-                { label: "Recovery Time", value: "2.4s", delta: "-0.6s", color: "#10b981", trend: "down" },
-                { label: "Retry Success", value: "94.2%", delta: "+1.1%", color: "#f59e0b", trend: "up" },
-              ].map((metric, i) => (
-                <motion.div
-                  key={metric.label}
-                  variants={rowVariant}
-                  className="rounded-xl p-4 flex items-center justify-between"
-                  style={{
-                    background: "rgba(9,9,11,0.6)",
-                    border: "1px solid rgba(255,255,255,0.06)",
-                  }}
-                  whileHover={{ borderColor: `${metric.color}30` }}
-                >
-                  <div>
-                    <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-1">
-                      {metric.label}
-                    </div>
-                    <div className="text-xl font-mono font-bold tabular-nums" style={{ color: metric.color }}>
-                      {metric.value}
-                    </div>
-                    <div className="flex items-center gap-1 mt-1">
-                      {metric.trend === "up" ? (
-                        <TrendingUp size={10} style={{ color: metric.color }} />
-                      ) : (
-                        <TrendingDown size={10} style={{ color: metric.color }} />
-                      )}
-                      <span className="text-[10px] font-mono" style={{ color: metric.color }}>
-                        {metric.delta}
-                      </span>
-                    </div>
-                  </div>
-                  <Sparkline
-                    data={sparkData.map((v, idx) => Math.max(5, v + (idx % 3) * 8 - i * 5))}
-                    color={metric.color}
-                    height={40}
-                  />
-                </motion.div>
-              ))}
-            </div>
-          </motion.section>
-
-          {/* Live Terminal */}
-          <motion.section
-            variants={slideInRight}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-60px" }}
-            className="lg:col-span-3"
-          >
-            <div className="flex items-center gap-2 mb-4">
-              <Terminal size={14} className="text-emerald-400" />
-              <h2 className="text-sm font-mono font-semibold text-zinc-300 uppercase tracking-widest">
-                Pipeline Live Log
-              </h2>
-              <div className="flex-1 h-px bg-white/5 ml-2" />
-              <div className="flex items-center gap-1.5">
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-[10px] font-mono text-zinc-500">streaming</span>
-              </div>
-            </div>
-            <div
-              className="rounded-xl overflow-hidden"
+          {(["pipeline", "chaos", "gates"] as const).map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className="flex-1 py-2 px-3 rounded-md text-[11px] font-mono font-bold uppercase tracking-wider transition-all duration-200"
               style={{
-                background: "rgba(5,5,8,0.95)",
-                border: "1px solid rgba(16,185,129,0.15)",
-                boxShadow: "0 0 30px rgba(16,185,129,0.05)",
+                backgroundColor: activeTab === tab ? "rgba(16,185,129,0.15)" : "transparent",
+                color: activeTab === tab ? "#10b981" : "#52525b",
+                border: activeTab === tab ? "1px solid rgba(16,185,129,0.3)" : "1px solid transparent",
               }}
             >
-              {/* Terminal header */}
-              <div
-                className="flex items-center gap-2 px-4 py-2.5 border-b"
-                style={{ borderColor: "rgba(16,185,129,0.1)", background: "rgba(16,185,129,0.04)" }}
+              {tab === "pipeline" ? "Pipeline" : tab === "chaos" ? "Chaos Events" : "Gate Rules"}
+            </button>
+          ))}
+        </motion.div>
+
+        {/* Pipeline tab */}
+        <AnimatePresence mode="wait">
+          {activeTab === "pipeline" && (
+            <motion.div
+              key="pipeline"
+              variants={staggerContainer}
+              initial="hidden"
+              animate="visible"
+              exit={{ opacity: 0 }}
+              className="space-y-6"
+            >
+              {/* Pipeline stages */}
+              <motion.div
+                variants={scaleIn}
+                className="rounded-xl border p-6"
+                style={{
+                  borderColor: "rgba(16,185,129,0.15)",
+                  backgroundColor: "rgba(9,9,11,0.8)",
+                  backdropFilter: "blur(20px)",
+                }}
               >
-                <div className="w-2.5 h-2.5 rounded-full bg-red-500/70" />
-                <div className="w-2.5 h-2.5 rounded-full bg-amber-500/70" />
-                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/70" />
-                <span className="text-[10px] font-mono text-zinc-600 ml-2">
-                  pipeline-gate — integration stage — 8 workers
-                </span>
-              </div>
-              {/* Terminal body */}
-              <div
-                ref={terminalRef}
-                className="h-80 overflow-y-auto p-4 space-y-0.5"
-                style={{ scrollbarWidth: "thin", scrollbarColor: "#27272a transparent" }}
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h2 className="text-sm font-bold text-white uppercase tracking-wider">QA Pipeline</h2>
+                    <p className="text-[10px] text-zinc-600 mt-0.5">Veridat Platform — 6-Stage Quality Gate</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {isRunning && (
+                      <div className="flex items-center gap-1.5">
+                        <motion.div
+                          className="w-1.5 h-1.5 rounded-full bg-amber-400"
+                          animate={{ opacity: [1, 0.3, 1] }}
+                          transition={{ duration: 0.8, repeat: Infinity }}
+                        />
+                        <span className="text-[10px] text-amber-400 uppercase tracking-wider">Running {runProgress}%</span>
+                      </div>
+                    )}
+                    <button
+                      onClick={handleRunPipeline}
+                      disabled={isRunning}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all duration-200"
+                      style={{
+                        backgroundColor: isRunning ? "rgba(63,63,70,0.3)" : "rgba(16,185,129,0.15)",
+                        color: isRunning ? "#52525b" : "#10b981",
+                        border: `1px solid ${isRunning ? "rgba(63,63,70,0.3)" : "rgba(16,185,129,0.3)"}`,
+                      }}
+                    >
+                      <Play size={10} />
+                      Run Pipeline
+                    </button>
+                  </div>
+                </div>
+
+                {/* Progress bar */}
+                {runProgress > 0 && (
+                  <div className="mb-6">
+                    <div className="h-1 rounded-full bg-zinc-800 overflow-hidden">
+                      <motion.div
+                        className="h-full rounded-full"
+                        style={{ background: "linear-gradient(90deg, #10b981, #06b6d4)" }}
+                        animate={{ width: `${runProgress}%` }}
+                        transition={{ duration: 0.5 }}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Stage nodes */}
+                <motion.div
+                  variants={staggerContainer}
+                  className="grid grid-cols-3 md:grid-cols-6 gap-4"
+                >
+                  {stages.map((stage, i) => (
+                    <StageNode key={stage.id} stage={stage} index={i} isActive={stage.status === "running"} />
+                  ))}
+                </motion.div>
+
+                {/* Stage details */}
+                <div className="mt-6 grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {stages.filter((s) => s.tests > 0).map((stage) => (
+                    <motion.div
+                      key={stage.id}
+                      variants={fadeInUp}
+                      className="rounded-lg border p-3"
+                      style={{
+                        borderColor: `${STATUS_COLORS[stage.status]}25`,
+                        backgroundColor: `${STATUS_COLORS[stage.status]}08`,
+                      }}
+                    >
+                      <div className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: STATUS_COLORS[stage.status] }}>
+                        {stage.label}
+                      </div>
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-[10px]">
+                          <span className="text-zinc-600">Tests</span>
+                          <span className="text-zinc-300 tabular-nums">{stage.tests.toLocaleString("en-US")}</span>
+                        </div>
+                        <div className="flex justify-between text-[10px]">
+                          <span className="text-zinc-600">Passed</span>
+                          <span className="text-emerald-400 tabular-nums">{stage.passed.toLocaleString("en-US")}</span>
+                        </div>
+                        {stage.failed > 0 && (
+                          <div className="flex justify-between text-[10px]">
+                            <span className="text-zinc-600">Failed</span>
+                            <span className="text-red-400 tabular-nums">{stage.failed.toLocaleString("en-US")}</span>
+                          </div>
+                        )}
+                        {stage.coverage !== undefined && (
+                          <div className="flex justify-between text-[10px]">
+                            <span className="text-zinc-600">Coverage</span>
+                            <span className="text-cyan-400 tabular-nums">{stage.coverage}%</span>
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+
+              {/* Terminal */}
+              <motion.div
+                variants={scaleIn}
+                className="rounded-xl border overflow-hidden"
+                style={{
+                  borderColor: "rgba(16,185,129,0.15)",
+                  backgroundColor: "rgba(9,9,11,0.9)",
+                }}
               >
-                <AnimatePresence initial={false}>
+                <div
+                  className="flex items-center justify-between px-4 py-2.5 border-b"
+                  style={{ borderColor: "rgba(16,185,129,0.1)" }}
+                >
+                  <div className="flex items-center gap-2">
+                    <Terminal size={12} className="text-emerald-400" />
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">Pipeline Log</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <motion.div
+                      className="w-1.5 h-1.5 rounded-full bg-emerald-400"
+                      animate={{ opacity: [1, 0.3, 1] }}
+                      transition={{ duration: 1.2, repeat: Infinity }}
+                    />
+                    <span className="text-[9px] text-zinc-600">LIVE</span>
+                  </div>
+                </div>
+                <div
+                  ref={terminalRef}
+                  className="h-48 overflow-y-auto p-4 space-y-1"
+                  style={{ scrollbarWidth: "none" }}
+                >
                   {terminalLines.map((line) => (
                     <motion.div
                       key={line.id}
-                      initial={{ opacity: 0, y: 4 }}
-                      animate={{ opacity: 1, y: 0 }}
+                      initial={{ opacity: 0, x: -8 }}
+                      animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.2 }}
-                      className="flex items-start gap-2 text-[11px] font-mono leading-relaxed"
+                      className="flex items-start gap-2 text-[10px]"
                     >
                       <span className="text-zinc-700 flex-shrink-0 tabular-nums">{line.ts}</span>
                       <span
-                        className="flex-shrink-0 w-12 text-right uppercase text-[9px] tracking-wider"
-                        style={{ color: levelColors[line.level] }}
+                        className="flex-1"
+                        style={{ color: TERMINAL_COLORS[line.level] }}
                       >
-                        {line.level}
+                        {line.msg}
                       </span>
-                      <span style={{ color: levelColors[line.level] + "cc" }}>{line.msg}</span>
                     </motion.div>
                   ))}
-                </AnimatePresence>
-                <div className="flex items-center gap-1 mt-1">
-                  <span className="text-emerald-400 text-xs">$</span>
-                  <motion.span
-                    animate={{ opacity: [1, 0, 1] }}
-                    transition={{ duration: 1, repeat: Infinity }}
-                    className="w-2 h-3.5 bg-emerald-400 inline-block"
-                  />
-                </div>
-              </div>
-            </div>
-          </motion.section>
-        </div>
-
-        {/* Resilience Scorecard */}
-        <motion.section
-          variants={fadeInUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-60px" }}
-        >
-          <div className="flex items-center gap-2 mb-4">
-            <Eye size={14} className="text-purple-400" />
-            <h2 className="text-sm font-mono font-semibold text-zinc-300 uppercase tracking-widest">
-              Resilience Scorecard
-            </h2>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              {
-                label: "Blast Radius",
-                value: "Contained",
-                sub: "2 of 8 pods affected",
-                color: "#f59e0b",
-                icon: <AlertTriangle size={18} />,
-              },
-              {
-                label: "MTTR",
-                value: "2.4s",
-                sub: "Mean time to recovery",
-                color: "#10b981",
-                icon: <Clock size={18} />,
-              },
-              {
-                label: "Fault Coverage",
-                value: "6/6",
-                sub: "All fault types validated",
-                color: "#06b6d4",
-                icon: <CheckCircle size={18} />,
-              },
-              {
-                label: "SLO Compliance",
-                value: "99.7%",
-                sub: "Under active chaos load",
-                color: "#a78bfa",
-                icon: <TrendingUp size={18} />,
-              },
-            ].map((card) => (
-              <motion.div
-                key={card.label}
-                variants={scaleIn}
-                whileHover={{ scale: 1.03, y: -3 }}
-                className="rounded-2xl p-5 flex flex-col gap-3"
-                style={{
-                  background: "rgba(9,9,11,0.7)",
-                  border: `1px solid ${card.color}20`,
-                  boxShadow: `0 4px 24px ${card.color}08`,
-                }}
-              >
-                <div style={{ color: card.color }}>{card.icon}</div>
-                <div>
-                  <div className="text-2xl font-mono font-bold tabular-nums" style={{ color: card.color }}>
-                    {card.value}
-                  </div>
-                  <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mt-0.5">
-                    {card.label}
-                  </div>
-                  <div className="text-[10px] font-mono text-zinc-600 mt-1">{card.sub}</div>
                 </div>
               </motion.div>
-            ))}
-          </div>
-        </motion.section>
+            </motion.div>
+          )}
+
+          {/* Chaos tab */}
+          {activeTab === "chaos" && (
+            <motion.div
+              key="chaos"
+              variants={staggerContainer}
+              initial="hidden"
+              animate="visible"
+              exit={{ opacity: 0 }}
+              className="space-y-6"
+            >
+              {/* Chaos Control Panel */}
+              <motion.div
+                variants={scaleIn}
+                className="rounded-xl border p-6"
+                style={{
+                  borderColor: "rgba(239,68,68,0.2)",
+                  backgroundColor: "rgba(9,9,11,0.8)",
+                  backdropFilter: "blur(20px)",
+                }}
+              >
+                <div className="flex items-center gap-3 mb-6">
+                  <div
+                    className="w-8 h-8 rounded-lg flex items-center justify-center"
+                    style={{ backgroundColor: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.3)" }}
+                  >
+                    <Zap size={14} className="text-red-400" />
+                  </div>
+                  <div>
+                    <h2 className="text-sm font-bold text-white uppercase tracking-wider">Chaos Control Panel</h2>
+                    <p className="text-[10px] text-zinc-600">Inject faults into Veridat platform services</p>
+                  </div>
+                </div>
+
+                {/* Network throttle sliders */}
+                <div className="space-y-5 mb-6">
+                  <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest border-b pb-2" style={{ borderColor: "rgba(63,63,70,0.4)" }}>
+                    Network Throttle
+                  </div>
+                  {[
+                    { key: "packetLoss" as const, label: "Packet Loss", unit: "%", max: 100, color: "#ef4444" },
+                    { key: "jitterMs" as const, label: "Jitter", unit: "ms", max: 500, color: "#f59e0b" },
+                  ].map((slider) => (
+                    <div key={slider.key}>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-[11px] text-zinc-400">{slider.label}</span>
+                        <span className="text-[11px] font-bold tabular-nums" style={{ color: slider.color }}>
+                          {sliders[slider.key]}{slider.unit}
+                        </span>
+                      </div>
+                      <div className="relative">
+                        <input
+                          type="range"
+                          min={0}
+                          max={slider.max}
+                          value={sliders[slider.key]}
+                          onChange={(e) => handleSliderChange(slider.key, Number(e.target.value))}
+                          className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
+                          style={{
+                            background: `linear-gradient(90deg, ${slider.color} ${(sliders[slider.key] / slider.max) * 100}%, rgba(63,63,70,0.4) ${(sliders[slider.key] / slider.max) * 100}%)`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+
+                  <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest border-b pb-2 mt-4" style={{ borderColor: "rgba(63,63,70,0.4)" }}>
+                    Server Stress
+                  </div>
+                  {[
+                    { key: "cpuStarvation" as const, label: "CPU Starvation", unit: "%", max: 100, color: "#f97316" },
+                    { key: "memoryStarvation" as const, label: "Memory Starvation", unit: "%", max: 100, color: "#a855f7" },
+                  ].map((slider) => (
+                    <div key={slider.key}>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-[11px] text-zinc-400">{slider.label}</span>
+                        <span className="text-[11px] font-bold tabular-nums" style={{ color: slider.color }}>
+                          {sliders[slider.key]}{slider.unit}
+                        </span>
+                      </div>
+                      <div className="relative">
+                        <input
+                          type="range"
+                          min={0}
+                          max={slider.max}
+                          value={sliders[slider.key]}
+                          onChange={(e) => handleSliderChange(slider.key, Number(e.target.value))}
+                          className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
+                          style={{
+                            background: `linear-gradient(90deg, ${slider.color} ${(sliders[slider.key] / slider.max) * 100}%, rgba(63,63,70,0.4) ${(sliders[slider.key] / slider.max) * 100}%)`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Quick inject buttons */}
+                <div>
+                  <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-3">Quick Fault Injection</div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { type: "network-partition", label: "Network Partition", color: "#ef4444", target: "Veridat API Gateway" },
+                      { type: "latency-inject", label: "Latency Inject", color: "#f59e0b", target: "Stripe Payment" },
+                      { type: "cpu-spike", label: "CPU Spike", color: "#f97316", target: "Desktop Runner" },
+                      { type: "memory-leak", label: "Memory Leak", color: "#a855f7", target: "Chat WebSocket" },
+                    ].map((fault) => (
+                      <button
+                        key={fault.type}
+                        onClick={() => handleInjectFault(fault.type)}
+                        className="flex flex-col items-start p-3 rounded-lg border text-left transition-all duration-200 hover:scale-[1.02]"
+                        style={{
+                          borderColor: `${fault.color}30`,
+                          backgroundColor: `${fault.color}08`,
+                        }}
+                      >
+                        <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: fault.color }}>
+                          {fault.label}
+                        </span>
+                        <span className="text-[9px] text-zinc-600 mt-0.5">{fault.target}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Chaos events list */}
+              <motion.div
+                variants={scaleIn}
+                className="rounded-xl border p-6"
+                style={{
+                  borderColor: "rgba(16,185,129,0.15)",
+                  backgroundColor: "rgba(9,9,11,0.8)",
+                }}
+              >
+                <h2 className="text-sm font-bold text-white uppercase tracking-wider mb-4">Active Chaos Events</h2>
+                <motion.div variants={staggerContainer} className="space-y-3">
+                  {chaosEvents.map((event) => (
+                    <ChaosEventCard key={event.id} event={event} />
+                  ))}
+                </motion.div>
+              </motion.div>
+            </motion.div>
+          )}
+
+          {/* Gates tab */}
+          {activeTab === "gates" && (
+            <motion.div
+              key="gates"
+              variants={staggerContainer}
+              initial="hidden"
+              animate="visible"
+              exit={{ opacity: 0 }}
+              className="space-y-6"
+            >
+              <motion.div
+                variants={scaleIn}
+                className="rounded-xl border p-6"
+                style={{
+                  borderColor: "rgba(16,185,129,0.15)",
+                  backgroundColor: "rgba(9,9,11,0.8)",
+                  backdropFilter: "blur(20px)",
+                }}
+              >
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h2 className="text-sm font-bold text-white uppercase tracking-wider">Quality Gate Rules</h2>
+                    <p className="text-[10px] text-zinc-600 mt-0.5">Rao Muhammad Ali — QA Standards for Veridat Platform</p>
+                  </div>
+                  <div
+                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-md border"
+                    style={{ borderColor: "rgba(16,185,129,0.3)", backgroundColor: "rgba(16,185,129,0.08)" }}
+                  >
+                    <CheckCircle size={10} className="text-emerald-400" />
+                    <span className="text-[10px] text-emerald-400 font-bold">ALL GATES PASSING</span>
+                  </div>
+                </div>
+
+                <motion.div variants={staggerContainer} className="space-y-1">
+                  {GATE_RULES.map((rule) => (
+                    <GateRuleRow key={rule.id} rule={rule} />
+                  ))}
+                </motion.div>
+
+                {/* Summary */}
+                <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {[
+                    { label: "Pass Rate", value: "97.2%", color: "#10b981", sub: "Target ≥ 95%" },
+                    { label: "API Response", value: "142ms", color: "#06b6d4", sub: "Target < 500ms" },
+                    { label: "Auth Failures", value: "0", color: "#10b981", sub: "Zero tolerance" },
+                    { label: "Platform Coverage", value: "PASS", color: "#10b981", sub: "macOS · Linux · Windows" },
+                  ].map((stat) => (
+                    <div
+                      key={stat.label}
+                      className="rounded-lg border p-3 text-center"
+                      style={{
+                        borderColor: `${stat.color}25`,
+                        backgroundColor: `${stat.color}08`,
+                      }}
+                    >
+                      <div className="text-lg font-bold tabular-nums" style={{ color: stat.color }}>{stat.value}</div>
+                      <div className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider mt-0.5">{stat.label}</div>
+                      <div className="text-[9px] text-zinc-600 mt-0.5">{stat.sub}</div>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+
+              {/* QA Engineer context */}
+              <motion.div
+                variants={scaleIn}
+                className="rounded-xl border p-6"
+                style={{
+                  borderColor: "rgba(6,182,212,0.15)",
+                  backgroundColor: "rgba(9,9,11,0.8)",
+                }}
+              >
+                <h2 className="text-sm font-bold text-white uppercase tracking-wider mb-4">QA Engineer Context</h2>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-3">
+                    <div className="text-[10px] text-zinc-500 uppercase tracking-widest border-b pb-2" style={{ borderColor: "rgba(63,63,70,0.4)" }}>Platform Under Test</div>
+                    {[
+                      { label: "Platform", value: "Veridat Data Marketplace" },
+                      { label: "URL", value: "veridat-demo.daticsai.com" },
+                      { label: "Modules", value: "Web · Desktop · Admin Panel" },
+                      { label: "Automation", value: "Playwright (critical flows)" },
+                      { label: "Issue Tracker", value: "ClickUp" },
+                    ].map((item) => (
+                      <div key={item.label} className="flex justify-between text-[11px]">
+                        <span className="text-zinc-600">{item.label}</span>
+                        <span className="text-zinc-300">{item.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="space-y-3">
+                    <div className="text-[10px] text-zinc-500 uppercase tracking-widest border-b pb-2" style={{ borderColor: "rgba(63,63,70,0.4)" }}>Test Coverage Areas</div>
+                    {[
+                      "Dataset upload & cloud imports (GDrive, OneDrive)",
+                      "Malware scanning & encryption/decryption flows",
+                      "Stripe payment & KYC onboarding flows",
+                      "OTP verification & session handling",
+                      "Role-based access control (RBAC)",
+                      "Real-time chat — message ordering & persistence",
+                    ].map((area) => (
+                      <div key={area} className="flex items-start gap-2 text-[10px]">
+                        <div className="w-1 h-1 rounded-full bg-emerald-400 mt-1.5 flex-shrink-0" />
+                        <span className="text-zinc-400">{area}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-    </main>
+    </div>
   );
 }

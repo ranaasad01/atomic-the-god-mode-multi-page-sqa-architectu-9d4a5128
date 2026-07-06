@@ -13,10 +13,10 @@ export interface BrandConstants {
 }
 
 export const brand: BrandConstants = {
-  name: "QE Command Center",
-  shortName: "QECC",
-  tagline: "Enterprise Quality Engineering Infrastructure",
-  version: "v4.2.1",
+  name: "Rao Muhammad Ali",
+  shortName: "RMA",
+  tagline: "Software Quality Assurance Engineer · DaticsAI, Lahore, Pakistan",
+  version: "v1.0.0",
 };
 
 export const navLinks: NavLink[] = [
@@ -68,17 +68,17 @@ export const initialMetrics: MetricSnapshot[] = [
 
 export const techStack: string[] = [
   "Playwright",
-  "Vitest",
-  "Stryker",
-  "k6",
-  "Grafana",
-  "Prometheus",
-  "Docker",
-  "Kubernetes",
-  "GitHub Actions",
-  "OWASP ZAP",
-  "Allure",
-  "TestRail",
+  "Postman",
+  "JMeter",
+  "ClickUp",
+  "Jira",
+  "Git",
+  "HTML",
+  "CSS",
+  "JavaScript",
+  "MySQL",
+  "MongoDB",
+  "Agile/Scrum",
 ];
 
 export const pipelineStages = [

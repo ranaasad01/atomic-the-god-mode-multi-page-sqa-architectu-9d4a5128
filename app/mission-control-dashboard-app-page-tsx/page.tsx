@@ -36,7 +36,7 @@ interface SparkPoint {
 const MOCK_RUNS: TestRun[] = [
   {
     id: "run-4821",
-    suite: "Auth E2E Suite",
+    suite: "Auth & OTP E2E Suite",
     status: "passed",
     duration: "2m 14s",
     tests: 148,
@@ -47,7 +47,7 @@ const MOCK_RUNS: TestRun[] = [
   },
   {
     id: "run-4820",
-    suite: "Checkout Flow",
+    suite: "Stripe Payment & KYC Flow",
     status: "failed",
     duration: "3m 07s",
     tests: 212,
@@ -58,7 +58,7 @@ const MOCK_RUNS: TestRun[] = [
   },
   {
     id: "run-4819",
-    suite: "API Contract Tests",
+    suite: "API Contract Tests — Veridat",
     status: "running",
     duration: "1m 22s",
     tests: 340,
@@ -69,7 +69,7 @@ const MOCK_RUNS: TestRun[] = [
   },
   {
     id: "run-4818",
-    suite: "Visual Regression",
+    suite: "Dataset Upload & Cloud Import",
     status: "passed",
     duration: "4m 51s",
     tests: 96,
@@ -80,7 +80,7 @@ const MOCK_RUNS: TestRun[] = [
   },
   {
     id: "run-4817",
-    suite: "Performance Baseline",
+    suite: "Desktop Cross-Platform Baseline",
     status: "queued",
     duration: "--",
     tests: 0,
@@ -91,7 +91,7 @@ const MOCK_RUNS: TestRun[] = [
   },
   {
     id: "run-4816",
-    suite: "Security Scan",
+    suite: "Security & RBAC Smoke Tests",
     status: "passed",
     duration: "6m 02s",
     tests: 54,
@@ -112,32 +112,32 @@ const PIPELINE_STATUS: Record<string, "idle" | "running" | "passed" | "failed"> 
 };
 
 const INITIAL_TERMINAL_LINES: TerminalLine[] = [
-  { id: 1, text: "▶  Playwright v1.44.0 — parallel workers: 8", type: "info", ts: "09:41:03" },
-  { id: 2, text: "  ✓  [chromium] › auth/login.spec.ts:12 — should render login form (234ms)", type: "pass", ts: "09:41:04" },
-  { id: 3, text: "  ✓  [chromium] › auth/login.spec.ts:28 — should validate email format (189ms)", type: "pass", ts: "09:41:04" },
-  { id: 4, text: "  ✓  [firefox] › auth/login.spec.ts:12 — should render login form (301ms)", type: "pass", ts: "09:41:05" },
-  { id: 5, text: "  ✗  [webkit] › checkout/cart.spec.ts:88 — should apply discount code (timeout 30000ms)", type: "fail", ts: "09:41:06" },
-  { id: 6, text: "  ⚠  Flaky test detected: checkout/cart.spec.ts:88 — retry 1/3", type: "warn", ts: "09:41:07" },
-  { id: 7, text: "  ✓  [chromium] › api/contracts.spec.ts:44 — GET /users returns 200 (88ms)", type: "pass", ts: "09:41:08" },
-  { id: 8, text: "  ✓  [chromium] › api/contracts.spec.ts:55 — POST /orders validates schema (112ms)", type: "pass", ts: "09:41:08" },
-  { id: 9, text: '  console.assert  Expected status 200, received 503 — {"trace":"4f2a1b"}', type: "cmd", ts: "09:41:09" },
-  { id: 10, text: "  ✓  [firefox] › api/contracts.spec.ts:44 — GET /users returns 200 (94ms)", type: "pass", ts: "09:41:09" },
+  { id: 1, text: "▶  Playwright v1.44.0 — parallel workers: 4 — Veridat QA Suite", type: "info", ts: "09:41:03" },
+  { id: 2, text: "  ✓  [chromium] › auth/otp.spec.ts:12 — should send OTP on login (234ms)", type: "pass", ts: "09:41:04" },
+  { id: 3, text: "  ✓  [chromium] › auth/session.spec.ts:28 — should maintain session across tabs (189ms)", type: "pass", ts: "09:41:04" },
+  { id: 4, text: "  ✓  [firefox] › auth/otp.spec.ts:12 — should send OTP on login (301ms)", type: "pass", ts: "09:41:05" },
+  { id: 5, text: "  ✗  [chromium] › api/datasets.spec.ts:44 — POST /api/datasets — expected 201 got 500 (88ms)", type: "fail", ts: "09:41:06" },
+  { id: 6, text: "  ✓  [webkit] › payment/stripe.spec.ts:8 — buyer onboarding complete (2100ms)", type: "pass", ts: "09:41:07" },
+  { id: 7, text: "  ✓  [chromium] › chat/messaging.spec.ts:22 — messages persist after reload (310ms)", type: "pass", ts: "09:41:08" },
+  { id: 8, text: "  ✓  [chromium] › security/rbac.spec.ts:5 — admin accesses all routes (145ms)", type: "pass", ts: "09:41:09" },
 ];
 
 const EXTRA_TERMINAL_LINES: TerminalLine[] = [
-  { id: 11, text: "  ✓  [chromium] › auth/session.spec.ts:7 — token refresh succeeds (145ms)", type: "pass", ts: "09:41:10" },
-  { id: 12, text: "  ✓  [chromium] › auth/session.spec.ts:19 — logout clears cookies (98ms)", type: "pass", ts: "09:41:11" },
-  { id: 13, text: "  ✗  [webkit] › checkout/cart.spec.ts:88 — retry 1 failed (timeout)", type: "fail", ts: "09:41:12" },
-  { id: 14, text: "  ⚠  Flaky test detected: checkout/cart.spec.ts:88 — retry 2/3", type: "warn", ts: "09:41:13" },
-  { id: 15, text: '  console.log  {"step":"applyDiscount","code":"SAVE20","result":"INVALID_CODE"}', type: "cmd", ts: "09:41:13" },
-  { id: 16, text: "  ✓  [chromium] › perf/lcp.spec.ts:3 — LCP < 2500ms (1847ms) (pass)", type: "pass", ts: "09:41:14" },
-  { id: 17, text: "  ✓  [firefox] › perf/lcp.spec.ts:3 — LCP < 2500ms (2103ms) (pass)", type: "pass", ts: "09:41:15" },
-  { id: 18, text: "  ✗  [webkit] › checkout/cart.spec.ts:88 — retry 2 failed (timeout)", type: "fail", ts: "09:41:16" },
-  { id: 19, text: "  ✗  checkout/cart.spec.ts:88 — FINAL FAIL after 3 retries", type: "fail", ts: "09:41:17" },
-  { id: 20, text: "  ✓  [chromium] › security/xss.spec.ts:11 — reflected XSS blocked (201ms)", type: "pass", ts: "09:41:18" },
+  { id: 9, text: "  ✓  [chromium] › auth/otp.spec.ts:30 — OTP expires after 5 minutes (198ms)", type: "pass", ts: "09:41:10" },
+  { id: 10, text: "  ✓  [firefox] › payment/kyc.spec.ts:14 — seller KYC verification status updates (445ms)", type: "pass", ts: "09:41:11" },
+  { id: 11, text: "  ✓  [chromium] › datasets/upload.spec.ts:7 — large file upload completes (3210ms)", type: "pass", ts: "09:41:12" },
+  { id: 12, text: "  ✓  [webkit] › datasets/cloud.spec.ts:19 — Google Drive import succeeds (1870ms)", type: "pass", ts: "09:41:13" },
+  { id: 13, text: "  ✗  [chromium] › payment/stripe.spec.ts:44 — webhook signature validation failed (timeout 30000ms)", type: "fail", ts: "09:41:14" },
+  { id: 14, text: "  ⚠  Flaky test detected: payment/stripe.spec.ts:44 — retry 1/3", type: "warn", ts: "09:41:15" },
+  { id: 15, text: "  ✓  [chromium] › security/rbac.spec.ts:22 — buyer cannot access admin routes (112ms)", type: "pass", ts: "09:41:16" },
+  { id: 16, text: "  ✓  [firefox] › chat/messaging.spec.ts:35 — real-time message ordering correct (289ms)", type: "pass", ts: "09:41:17" },
+  { id: 17, text: '  console.assert  Expected status 201, received 500 — {"trace":"veridat-4f2a1b","endpoint":"/api/datasets"}', type: "cmd", ts: "09:41:18" },
+  { id: 18, text: "  ✓  [chromium] › datasets/malware.spec.ts:8 — malware scan blocks infected file (567ms)", type: "pass", ts: "09:41:19" },
+  { id: 19, text: "  ✓  [webkit] › auth/session.spec.ts:41 — session invalidated on logout (134ms)", type: "pass", ts: "09:41:20" },
+  { id: 20, text: "  ✓  [chromium] › payment/kyc.spec.ts:28 — admin validates seller KYC (892ms)", type: "pass", ts: "09:41:21" },
 ];
 
-// ─── Sparkline Generator ──────────────────────────────────────────────────────
+// ─── Sparkline generator ──────────────────────────────────────────────────────
 
 function generateSparkPoints(count: number, base: number, variance: number): SparkPoint[] {
   const points: SparkPoint[] = [];
@@ -149,913 +149,682 @@ function generateSparkPoints(count: number, base: number, variance: number): Spa
   return points;
 }
 
-// ─── Sparkline SVG ────────────────────────────────────────────────────────────
+// ─── SVG Sparkline ────────────────────────────────────────────────────────────
 
 function Sparkline({
   points,
   color,
   height = 40,
   width = 120,
+  filled = false,
 }: {
   points: SparkPoint[];
   color: string;
   height?: number;
   width?: number;
+  filled?: boolean;
 }) {
-  if (!points || points.length < 2) return null;
-  const max = Math.max(...points.map((p) => p.value), 1);
+  if (points.length < 2) return null;
+  const max = Math.max(...points.map((p) => p.value));
   const min = Math.min(...points.map((p) => p.value));
   const range = max - min || 1;
-  const coords = points.map((p, i) => {
-    const x = (i / (points.length - 1)) * width;
-    const y = height - ((p.value - min) / range) * (height - 4) - 2;
-    return `${x},${y}`;
-  });
-  const polyline = coords.join(" ");
-  const areaPath = `M${coords[0]} L${coords.join(" L")} L${width},${height} L0,${height} Z`;
+  const stepX = width / (points.length - 1);
+
+  const coords = points.map((p, i) => ({
+    x: i * stepX,
+    y: height - ((p.value - min) / range) * (height - 4) - 2,
+  }));
+
+  const linePath = coords
+    .map((c, i) => `${i === 0 ? "M" : "L"} ${c.x.toFixed(1)} ${c.y.toFixed(1)}`)
+    .join(" ");
+
+  const areaPath =
+    linePath +
+    ` L ${coords[coords.length - 1].x.toFixed(1)} ${height} L 0 ${height} Z`;
 
   return (
-    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="overflow-visible">
-      <defs>
-        <linearGradient id={`sg-${color.replace("#", "")}`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity="0.3" />
-          <stop offset="100%" stopColor={color} stopOpacity="0.02" />
-        </linearGradient>
-      </defs>
-      <path d={areaPath} fill={`url(#sg-${color.replace("#", "")})`} />
-      <polyline
-        points={polyline}
+    <svg width={width} height={height} className="overflow-visible">
+      {filled && (
+        <path
+          d={areaPath}
+          fill={color}
+          fillOpacity={0.08}
+        />
+      )}
+      <path
+        d={linePath}
         fill="none"
         stroke={color}
-        strokeWidth="1.5"
-        strokeLinejoin="round"
+        strokeWidth={1.5}
         strokeLinecap="round"
-        style={{ filter: `drop-shadow(0 0 3px ${color})` }}
+        strokeLinejoin="round"
       />
       <circle
-        cx={coords[coords.length - 1]?.split(",")[0] ?? 0}
-        cy={coords[coords.length - 1]?.split(",")[1] ?? 0}
-        r="2.5"
+        cx={coords[coords.length - 1].x}
+        cy={coords[coords.length - 1].y}
+        r={2.5}
         fill={color}
-        style={{ filter: `drop-shadow(0 0 4px ${color})` }}
       />
     </svg>
   );
 }
 
-// ─── Stat Card ────────────────────────────────────────────────────────────────
+// ─── Status badge ─────────────────────────────────────────────────────────────
 
-const statCardVariant: Variants = {
-  hidden: { opacity: 0, y: 24, scale: 0.97 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: { type: "spring", stiffness: 120, damping: 16 },
-  },
-};
+function StatusBadge({ status }: { status: TestRun["status"] }) {
+  const cfg = {
+    passed: { color: "#10b981", bg: "rgba(16,185,129,0.1)", label: "PASSED" },
+    failed: { color: "#ef4444", bg: "rgba(239,68,68,0.1)", label: "FAILED" },
+    running: { color: "#06b6d4", bg: "rgba(6,182,212,0.1)", label: "RUNNING" },
+    queued: { color: "#f59e0b", bg: "rgba(245,158,11,0.1)", label: "QUEUED" },
+  }[status];
 
-function StatCard({
-  label,
-  value,
-  unit,
-  color,
-  sparkPoints,
-  delta,
-  icon: Icon,
-}: {
-  label: string;
-  value: string;
-  unit: string;
-  color: string;
-  sparkPoints: SparkPoint[];
-  delta: string;
-  icon: React.ElementType;
-}) {
   return (
-    <motion.div
-      variants={statCardVariant}
-      whileHover={{ y: -3, transition: { duration: 0.2 } }}
-      className="relative rounded-xl p-4 flex flex-col gap-3 overflow-hidden"
-      style={{
-        background: "rgba(9,9,11,0.7)",
-        border: "1px solid rgba(255,255,255,0.06)",
-        boxShadow: `0 0 0 1px rgba(0,0,0,0.4), 0 8px 32px -8px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04)`,
-      }}
+    <span
+      className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider"
+      style={{ color: cfg.color, background: cfg.bg, border: `1px solid ${cfg.color}30` }}
     >
-      <div
-        className="absolute inset-0 opacity-5 rounded-xl"
-        style={{ background: `radial-gradient(ellipse at top left, ${color}, transparent 70%)` }}
-      />
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div
-            className="w-7 h-7 rounded-lg flex items-center justify-center"
-            style={{ background: `${color}18`, border: `1px solid ${color}30` }}
-          >
-            <Icon size={13} style={{ color }} />
-          </div>
-          <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">{label}</span>
-        </div>
+      {status === "running" && (
         <span
-          className="text-[9px] font-mono px-1.5 py-0.5 rounded"
-          style={{ color, background: `${color}15`, border: `1px solid ${color}25` }}
-        >
-          {delta}
-        </span>
-      </div>
-      <div className="flex items-end justify-between">
-        <div>
-          <span className="text-2xl font-mono font-bold tabular-nums" style={{ color }}>
-            {value}
-          </span>
-          <span className="text-xs font-mono text-zinc-500 ml-1">{unit}</span>
-        </div>
-        <Sparkline points={sparkPoints} color={color} width={80} height={32} />
-      </div>
-    </motion.div>
+          className="w-1.5 h-1.5 rounded-full animate-pulse"
+          style={{ background: cfg.color }}
+        />
+      )}
+      {cfg.label}
+    </span>
   );
 }
 
-// ─── Terminal ─────────────────────────────────────────────────────────────────
+// ─── Pipeline stage dot ───────────────────────────────────────────────────────
 
-function LiveTerminal({ lines }: { lines: TerminalLine[] }) {
-  const endRef = useRef<HTMLDivElement>(null);
+function PipelineDot({ status, color }: { status: string; color: string }) {
+  const s = PIPELINE_STATUS[status] ?? "idle";
+  const dotColor =
+    s === "passed"
+      ? "#10b981"
+      : s === "failed"
+      ? "#ef4444"
+      : s === "running"
+      ? "#06b6d4"
+      : "#3f3f46";
+  return (
+    <div
+      className="w-2 h-2 rounded-full"
+      style={{
+        background: dotColor,
+        boxShadow: s === "running" ? `0 0 6px ${dotColor}` : "none",
+      }}
+    />
+  );
+}
 
-  useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [lines]);
+// ─── Terminal line color ──────────────────────────────────────────────────────
 
-  const colorMap: Record<TerminalLine["type"], string> = {
+function terminalColor(type: TerminalLine["type"]): string {
+  return {
     info: "#06b6d4",
     pass: "#10b981",
     fail: "#ef4444",
     warn: "#f59e0b",
-    cmd: "#a78bfa",
-  };
-
-  return (
-    <div
-      className="rounded-xl overflow-hidden"
-      style={{
-        background: "rgba(0,0,0,0.6)",
-        border: "1px solid rgba(255,255,255,0.06)",
-        boxShadow: "0 8px 32px -8px rgba(0,0,0,0.6)",
-      }}
-    >
-      {/* Terminal header */}
-      <div
-        className="flex items-center gap-2 px-4 py-2.5"
-        style={{ borderBottom: "1px solid rgba(255,255,255,0.05)", background: "rgba(255,255,255,0.02)" }}
-      >
-        <div className="flex gap-1.5">
-          <div className="w-2.5 h-2.5 rounded-full bg-red-500/70" />
-          <div className="w-2.5 h-2.5 rounded-full bg-amber-500/70" />
-          <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/70" />
-        </div>
-        <span className="text-[10px] font-mono text-zinc-500 ml-2">playwright — run-4819 — 8 workers</span>
-        <div className="ml-auto flex items-center gap-1.5">
-          <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-[9px] font-mono text-emerald-400">LIVE</span>
-        </div>
-      </div>
-      {/* Lines */}
-      <div className="h-52 overflow-y-auto p-3 space-y-0.5 font-mono text-[11px] leading-relaxed">
-        {(lines ?? []).map((line) => (
-          <div key={line.id} className="flex gap-2 items-start">
-            <span className="text-zinc-600 shrink-0 tabular-nums">{line.ts}</span>
-            <span style={{ color: colorMap[line.type] ?? "#a1a1aa" }}>{line.text}</span>
-          </div>
-        ))}
-        <div ref={endRef} />
-      </div>
-    </div>
-  );
-}
-
-// ─── Pipeline Stage ───────────────────────────────────────────────────────────
-
-const stageIconMap: Record<string, React.ElementType> = {
-  FileCode,
-  Check,
-  Activity,
-  GitBranch,
-  Terminal,
-  Lock,
-};
-
-function PipelineStageChip({
-  stage,
-  status,
-  index,
-}: {
-  stage: (typeof pipelineStages)[number];
-  status: "idle" | "running" | "passed" | "failed";
-  index: number;
-}) {
-  const Icon = stageIconMap[stage.icon] ?? Activity;
-  const statusConfig = {
-    idle: { color: "#52525b", bg: "rgba(82,82,91,0.1)", label: "IDLE" },
-    running: { color: "#f59e0b", bg: "rgba(245,158,11,0.1)", label: "RUN" },
-    passed: { color: "#10b981", bg: "rgba(16,185,129,0.1)", label: "PASS" },
-    failed: { color: "#ef4444", bg: "rgba(239,68,68,0.1)", label: "FAIL" },
-  };
-  const cfg = statusConfig[status];
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.85 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay: index * 0.08, type: "spring", stiffness: 140, damping: 16 }}
-      className="flex flex-col items-center gap-1.5"
-    >
-      <div
-        className="relative w-10 h-10 rounded-xl flex items-center justify-center"
-        style={{
-          background: cfg.bg,
-          border: `1px solid ${cfg.color}40`,
-          boxShadow: status === "running" ? `0 0 12px ${cfg.color}40` : "none",
-        }}
-      >
-        <Icon size={16} style={{ color: cfg.color }} />
-        {status === "running" && (
-          <motion.div
-            className="absolute inset-0 rounded-xl"
-            style={{ border: `1px solid ${cfg.color}` }}
-            animate={{ opacity: [0.6, 0, 0.6] }}
-            transition={{ duration: 1.2, repeat: Infinity }}
-          />
-        )}
-        {status === "passed" && (
-          <div className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-500 flex items-center justify-center">
-            <Check size={8} className="text-black" />
-          </div>
-        )}
-        {status === "failed" && (
-          <div className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-red-500 flex items-center justify-center">
-            <X size={8} className="text-white" />
-          </div>
-        )}
-      </div>
-      <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-wider">{stage.label}</span>
-      <span
-        className="text-[8px] font-mono px-1 rounded"
-        style={{ color: cfg.color, background: cfg.bg }}
-      >
-        {cfg.label}
-      </span>
-    </motion.div>
-  );
-}
-
-// ─── Test Run Row ─────────────────────────────────────────────────────────────
-
-function TestRunRow({ run, index }: { run: TestRun; index: number }) {
-  const statusConfig = {
-    passed: { color: "#10b981", icon: CheckCircle, label: "PASSED" },
-    failed: { color: "#ef4444", icon: AlertCircle, label: "FAILED" },
-    running: { color: "#f59e0b", icon: Activity, label: "RUNNING" },
-    queued: { color: "#6366f1", icon: Clock, label: "QUEUED" },
-  };
-  const cfg = statusConfig[run.status];
-  const StatusIcon = cfg.icon;
-  const passRate = run.tests > 0 ? ((run.passed / run.tests) * 100).toFixed(0) : "—";
-
-  return (
-    <motion.tr
-      initial={{ opacity: 0, x: -12 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: index * 0.06, duration: 0.3 }}
-      className="group"
-      style={{ borderBottom: "1px solid rgba(255,255,255,0.03)" }}
-    >
-      <td className="py-2.5 px-3">
-        <span className="text-[10px] font-mono text-zinc-600">{run.id}</span>
-      </td>
-      <td className="py-2.5 px-3">
-        <span className="text-xs font-mono text-zinc-300 group-hover:text-emerald-400 transition-colors duration-200">
-          {run.suite}
-        </span>
-      </td>
-      <td className="py-2.5 px-3">
-        <div className="flex items-center gap-1.5">
-          <StatusIcon size={11} style={{ color: cfg.color }} />
-          <span
-            className="text-[9px] font-mono px-1.5 py-0.5 rounded"
-            style={{ color: cfg.color, background: `${cfg.color}15`, border: `1px solid ${cfg.color}25` }}
-          >
-            {cfg.label}
-          </span>
-        </div>
-      </td>
-      <td className="py-2.5 px-3">
-        <span className="text-[10px] font-mono text-zinc-500">{run.tests > 0 ? run.tests : "—"}</span>
-      </td>
-      <td className="py-2.5 px-3">
-        <span className="text-[10px] font-mono" style={{ color: "#10b981" }}>
-          {run.passed > 0 ? run.passed : "—"}
-        </span>
-      </td>
-      <td className="py-2.5 px-3">
-        <span className="text-[10px] font-mono" style={{ color: run.failed > 0 ? "#ef4444" : "#52525b" }}>
-          {run.tests > 0 ? run.failed : "—"}
-        </span>
-      </td>
-      <td className="py-2.5 px-3">
-        <div className="flex items-center gap-2">
-          <div className="w-16 h-1 rounded-full bg-zinc-800 overflow-hidden">
-            <div
-              className="h-full rounded-full transition-all duration-500"
-              style={{
-                width: run.tests > 0 ? `${passRate}%` : "0%",
-                background: run.failed > 0 ? "#ef4444" : "#10b981",
-              }}
-            />
-          </div>
-          <span className="text-[9px] font-mono text-zinc-500">{run.tests > 0 ? `${passRate}%` : "—"}</span>
-        </div>
-      </td>
-      <td className="py-2.5 px-3">
-        <span className="text-[10px] font-mono text-zinc-600">{run.duration}</span>
-      </td>
-      <td className="py-2.5 px-3">
-        <span
-          className="text-[9px] font-mono px-1.5 py-0.5 rounded"
-          style={{ color: "#06b6d4", background: "rgba(6,182,212,0.08)", border: "1px solid rgba(6,182,212,0.2)" }}
-        >
-          {run.env}
-        </span>
-      </td>
-    </motion.tr>
-  );
-}
-
-// ─── Telemetry Panel ──────────────────────────────────────────────────────────
-
-function TelemetryPanel({
-  label,
-  value,
-  unit,
-  color,
-  points,
-  subLabel,
-}: {
-  label: string;
-  value: number;
-  unit: string;
-  color: string;
-  points: SparkPoint[];
-  subLabel: string;
-}) {
-  return (
-    <div
-      className="rounded-xl p-4 flex flex-col gap-2"
-      style={{
-        background: "rgba(9,9,11,0.6)",
-        border: "1px solid rgba(255,255,255,0.05)",
-        boxShadow: "0 4px 24px -8px rgba(0,0,0,0.4)",
-      }}
-    >
-      <div className="flex items-center justify-between">
-        <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">{label}</span>
-        <span className="text-[9px] font-mono text-zinc-600">{subLabel}</span>
-      </div>
-      <div className="flex items-end justify-between gap-4">
-        <div>
-          <span className="text-xl font-mono font-bold tabular-nums" style={{ color }}>
-            {value.toLocaleString("en-US")}
-          </span>
-          <span className="text-xs font-mono text-zinc-500 ml-1">{unit}</span>
-        </div>
-        <Sparkline points={points} color={color} width={100} height={36} />
-      </div>
-    </div>
-  );
-}
-
-// ─── Health Ring ──────────────────────────────────────────────────────────────
-
-function HealthRing({ value, color }: { value: number; color: string }) {
-  const r = 36;
-  const circ = 2 * Math.PI * r;
-  const offset = circ - (value / 100) * circ;
-
-  return (
-    <svg width={90} height={90} viewBox="0 0 90 90">
-      <circle cx={45} cy={45} r={r} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth={6} />
-      <motion.circle
-        cx={45}
-        cy={45}
-        r={r}
-        fill="none"
-        stroke={color}
-        strokeWidth={6}
-        strokeLinecap="round"
-        strokeDasharray={circ}
-        initial={{ strokeDashoffset: circ }}
-        animate={{ strokeDashoffset: offset }}
-        transition={{ duration: 1.2, ease: "easeOut" }}
-        transform="rotate(-90 45 45)"
-        style={{ filter: `drop-shadow(0 0 6px ${color})` }}
-      />
-      <text x={45} y={49} textAnchor="middle" fill={color} fontSize={14} fontFamily="monospace" fontWeight="bold">
-        {value.toFixed(0)}%
-      </text>
-    </svg>
-  );
+    cmd: "#a1a1aa",
+  }[type];
 }
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
-export default function MissionControlPage() {
+export default function MissionControlDashboardPage() {
   const [terminalLines, setTerminalLines] = useState<TerminalLine[]>(INITIAL_TERMINAL_LINES);
-  const [systemHealth, setSystemHealth] = useState(98.4);
-  const [p99Latency, setP99Latency] = useState(142);
-  const [passedCount, setPassedCount] = useState(4821);
-  const [failedCount, setFailedCount] = useState(137);
-  const [throughputRPS, setThroughputRPS] = useState(1847);
-  const [flakiness, setFlakiness] = useState(2.3);
+  const [terminalPaused, setTerminalPaused] = useState(false);
+  const [selectedRun, setSelectedRun] = useState<TestRun | null>(MOCK_RUNS[0]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeFilter, setActiveFilter] = useState<"all" | "passed" | "failed" | "running">("all");
-
-  // Sparkline histories
-  const [healthPoints, setHealthPoints] = useState<SparkPoint[]>(() =>
-    generateSparkPoints(20, 98, 3)
-  );
-  const [latencyPoints, setLatencyPoints] = useState<SparkPoint[]>(() =>
-    generateSparkPoints(20, 55, 15)
-  );
-  const [rpsPoints, setRpsPoints] = useState<SparkPoint[]>(() =>
-    generateSparkPoints(20, 60, 20)
+  const [throughputPoints, setThroughputPoints] = useState<SparkPoint[]>(() =>
+    generateSparkPoints(30, 65, 18)
   );
   const [flakinessPoints, setFlakinessPoints] = useState<SparkPoint[]>(() =>
-    generateSparkPoints(20, 20, 10)
+    generateSparkPoints(30, 30, 12)
   );
-
-  const extraLinesRef = useRef(0);
+  const [systemHealth, setSystemHealth] = useState(97.4);
+  const [p99Latency, setP99Latency] = useState(142);
+  const [passedCount, setPassedCount] = useState(2847);
+  const [failedCount, setFailedCount] = useState(53);
+  const [throughputRPS, setThroughputRPS] = useState(1847);
+  const terminalRef = useRef<HTMLDivElement>(null);
+  const extraLineIndex = useRef(0);
 
   // Live telemetry simulation
   useEffect(() => {
-    const interval = setInterval(() => {
-      setSystemHealth((v) => Math.min(100, Math.max(70, v + (Math.random() - 0.48) * 0.8)));
-      setP99Latency((v) => Math.max(80, Math.min(400, v + (Math.random() - 0.5) * 12)));
-      setPassedCount((v) => v + Math.floor(Math.random() * 4));
-      setFailedCount((v) => (Math.random() > 0.85 ? v + 1 : v));
-      setThroughputRPS((v) => Math.max(1200, Math.min(2400, v + (Math.random() - 0.5) * 80)));
-      setFlakiness((v) => Math.max(0.5, Math.min(8, v + (Math.random() - 0.5) * 0.3)));
-
-      setHealthPoints((pts) => {
-        const next = [...pts.slice(-19), { value: Math.min(100, Math.max(70, (pts[pts.length - 1]?.value ?? 98) + (Math.random() - 0.48) * 2)) }];
+    const id = setInterval(() => {
+      setSystemHealth((h) => Math.min(100, Math.max(85, h + (Math.random() - 0.48) * 0.4)));
+      setP99Latency((l) => Math.min(300, Math.max(80, l + (Math.random() - 0.5) * 8)));
+      setPassedCount((c) => c + Math.floor(Math.random() * 3));
+      setThroughputRPS((r) => Math.min(2500, Math.max(1200, r + (Math.random() - 0.5) * 60)));
+      setThroughputPoints((pts) => {
+        const next = [...pts.slice(1), { value: Math.min(100, Math.max(0, pts[pts.length - 1].value + (Math.random() - 0.5) * 15)) }];
         return next;
       });
-      setLatencyPoints((pts) => {
-        const last = pts[pts.length - 1]?.value ?? 55;
-        return [...pts.slice(-19), { value: Math.max(10, Math.min(100, last + (Math.random() - 0.5) * 10)) }];
-      });
-      setRpsPoints((pts) => {
-        const last = pts[pts.length - 1]?.value ?? 60;
-        return [...pts.slice(-19), { value: Math.max(20, Math.min(100, last + (Math.random() - 0.5) * 15)) }];
-      });
       setFlakinessPoints((pts) => {
-        const last = pts[pts.length - 1]?.value ?? 20;
-        return [...pts.slice(-19), { value: Math.max(5, Math.min(60, last + (Math.random() - 0.5) * 8)) }];
+        const next = [...pts.slice(1), { value: Math.min(100, Math.max(0, pts[pts.length - 1].value + (Math.random() - 0.5) * 8)) }];
+        return next;
       });
-
-      // Stream terminal lines
-      const idx = extraLinesRef.current % EXTRA_TERMINAL_LINES.length;
-      const newLine = EXTRA_TERMINAL_LINES[idx];
-      if (newLine) {
-        setTerminalLines((prev) => {
-          const updated = [...prev, { ...newLine, id: Date.now() }];
-          return updated.slice(-30);
-        });
-      }
-      extraLinesRef.current += 1;
-    }, 1400);
-
-    return () => clearInterval(interval);
+    }, 1200);
+    return () => clearInterval(id);
   }, []);
 
-  const healthColor = systemHealth > 85 ? "#10b981" : systemHealth > 65 ? "#f59e0b" : "#ef4444";
+  // Terminal streaming
+  useEffect(() => {
+    if (terminalPaused) return;
+    const id = setInterval(() => {
+      const extra = EXTRA_TERMINAL_LINES[extraLineIndex.current % EXTRA_TERMINAL_LINES.length];
+      extraLineIndex.current += 1;
+      const now = new Date();
+      const ts = `${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}:${now.getSeconds().toString().padStart(2, "0")}`;
+      setTerminalLines((lines) => [
+        ...lines.slice(-60),
+        { ...extra, id: Date.now(), ts },
+      ]);
+    }, 900);
+    return () => clearInterval(id);
+  }, [terminalPaused]);
 
-  const filteredRuns = MOCK_RUNS.filter((r) => {
-    const matchesSearch =
-      searchQuery === "" ||
+  // Auto-scroll terminal
+  useEffect(() => {
+    if (terminalRef.current && !terminalPaused) {
+      terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
+    }
+  }, [terminalLines, terminalPaused]);
+
+  const filteredRuns = MOCK_RUNS.filter(
+    (r) =>
       r.suite.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      r.id.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesFilter = activeFilter === "all" || r.status === activeFilter;
-    return matchesSearch && matchesFilter;
-  });
+      r.id.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-  const filterTabs: { key: typeof activeFilter; label: string }[] = [
-    { key: "all", label: "All Runs" },
-    { key: "passed", label: "Passed" },
-    { key: "failed", label: "Failed" },
-    { key: "running", label: "Running" },
-  ];
+  const totalTests = MOCK_RUNS.reduce((a, r) => a + r.tests, 0);
+  const totalPassed = MOCK_RUNS.reduce((a, r) => a + r.passed, 0);
+  const totalFailed = MOCK_RUNS.reduce((a, r) => a + r.failed, 0);
+  const passRate = totalTests > 0 ? ((totalPassed / totalTests) * 100).toFixed(1) : "0.0";
 
   return (
-    <div className="min-h-screen" style={{ background: "transparent" }}>
-      {/* Page header */}
+    <div className="min-h-screen px-4 py-8 md:px-8 space-y-8">
+      {/* ── Header ── */}
       <motion.div
         variants={staggerContainer}
         initial="hidden"
         animate="visible"
-        className="mb-8"
+        className="space-y-2"
       >
-        <motion.div variants={fadeIn} className="flex items-center gap-2 mb-3">
-          <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-400">
-            Mission Control — Live
-          </span>
-          <div
-            className="ml-auto text-[9px] font-mono px-2 py-0.5 rounded"
-            style={{ color: "#06b6d4", background: "rgba(6,182,212,0.08)", border: "1px solid rgba(6,182,212,0.2)" }}
-          >
-            {brand.version}
-          </div>
+        <motion.div variants={fadeInUp} className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" style={{ boxShadow: "0 0 8px #10b981" }} />
+          <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Mission Control Dashboard</span>
+          <span className="text-[10px] font-mono text-zinc-600">— Veridat QA Suite @ DaticsAI</span>
         </motion.div>
         <motion.h1
           variants={fadeInUp}
-          className="text-3xl md:text-4xl font-mono font-bold tracking-tight text-zinc-100"
-          style={{ textShadow: "0 0 40px rgba(16,185,129,0.2)" }}
+          className="text-2xl md:text-3xl font-bold font-mono text-emerald-400"
+          style={{ textShadow: "0 0 20px rgba(16,185,129,0.3)" }}
         >
-          Quality Engineering
-          <span className="text-emerald-400"> Command Center</span>
+          {brand.name}
         </motion.h1>
-        <motion.p variants={fadeInUp} className="mt-2 text-sm font-mono text-zinc-500 max-w-xl">
-          Real-time telemetry across all test environments. Monitoring {(passedCount + failedCount).toLocaleString("en-US")} test executions with {systemHealth.toFixed(1)}% system health.
+        <motion.p variants={fadeInUp} className="text-sm font-mono text-zinc-500">
+          Rao Muhammad Ali · SQA Engineer · DaticsAI, Lahore
         </motion.p>
       </motion.div>
 
-      {/* ── Stat Cards ── */}
+      {/* ── Top KPI strip ── */}
       <motion.div
         variants={staggerContainer}
         initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-60px" }}
-        className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6"
-      >
-        <StatCard
-          label="System Health"
-          value={systemHealth.toFixed(1)}
-          unit="%"
-          color={healthColor}
-          sparkPoints={healthPoints}
-          delta="+0.2%"
-          icon={Activity}
-        />
-        <StatCard
-          label="P99 Latency"
-          value={p99Latency.toFixed(0)}
-          unit="ms"
-          color={p99Latency > 250 ? "#ef4444" : p99Latency > 180 ? "#f59e0b" : "#06b6d4"}
-          sparkPoints={latencyPoints}
-          delta={p99Latency > 200 ? "↑ HIGH" : "↓ LOW"}
-          icon={Zap}
-        />
-        <StatCard
-          label="Tests Passed"
-          value={passedCount.toLocaleString("en-US")}
-          unit="total"
-          color="#10b981"
-          sparkPoints={rpsPoints}
-          delta="+12 /min"
-          icon={CheckCircle}
-        />
-        <StatCard
-          label="Throughput"
-          value={Math.round(throughputRPS).toLocaleString("en-US")}
-          unit="RPS"
-          color="#a78bfa"
-          sparkPoints={rpsPoints}
-          delta="Poisson"
-          icon={Sparkles}
-        />
-      </motion.div>
-
-      {/* ── Pipeline + Health Ring ── */}
-      <motion.div
-        variants={fadeInUp}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-40px" }}
-        className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6"
-      >
-        {/* Pipeline stages */}
-        <div
-          className="lg:col-span-2 rounded-xl p-5"
-          style={{
-            background: "rgba(9,9,11,0.7)",
-            border: "1px solid rgba(255,255,255,0.06)",
-            boxShadow: "0 8px 32px -8px rgba(0,0,0,0.5)",
-          }}
-        >
-          <div className="flex items-center justify-between mb-5">
-            <div>
-              <h2 className="text-xs font-mono font-bold text-zinc-200 uppercase tracking-widest">
-                CI Pipeline — run-4819
-              </h2>
-              <p className="text-[10px] font-mono text-zinc-600 mt-0.5">API Contract Tests — production env</p>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <motion.div
-                className="w-2 h-2 rounded-full bg-amber-400"
-                animate={{ opacity: [1, 0.3, 1] }}
-                transition={{ duration: 1, repeat: Infinity }}
-              />
-              <span className="text-[9px] font-mono text-amber-400">IN PROGRESS</span>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 overflow-x-auto pb-2">
-            {pipelineStages.map((stage, i) => (
-              <div key={stage.id} className="flex items-center gap-2 shrink-0">
-                <PipelineStageChip
-                  stage={stage}
-                  status={PIPELINE_STATUS[stage.id] ?? "idle"}
-                  index={i}
-                />
-                {i < pipelineStages.length - 1 && (
-                  <div
-                    className="w-6 h-px"
-                    style={{
-                      background:
-                        PIPELINE_STATUS[stage.id] === "passed"
-                          ? "rgba(16,185,129,0.4)"
-                          : "rgba(255,255,255,0.08)",
-                    }}
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-          {/* Progress bar */}
-          <div className="mt-4">
-            <div className="flex justify-between mb-1">
-              <span className="text-[9px] font-mono text-zinc-600">Overall Progress</span>
-              <span className="text-[9px] font-mono text-zinc-500">2 / 6 stages complete</span>
-            </div>
-            <div className="h-1 rounded-full bg-zinc-800 overflow-hidden">
-              <motion.div
-                className="h-full rounded-full"
-                style={{ background: "linear-gradient(90deg, #10b981, #06b6d4)" }}
-                initial={{ width: "0%" }}
-                animate={{ width: "33%" }}
-                transition={{ duration: 1.5, ease: "easeOut" }}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Health ring */}
-        <div
-          className="rounded-xl p-5 flex flex-col items-center justify-center gap-4"
-          style={{
-            background: "rgba(9,9,11,0.7)",
-            border: "1px solid rgba(255,255,255,0.06)",
-            boxShadow: "0 8px 32px -8px rgba(0,0,0,0.5)",
-          }}
-        >
-          <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">System Health</span>
-          <HealthRing value={systemHealth} color={healthColor} />
-          <div className="grid grid-cols-2 gap-3 w-full">
-            <div className="text-center">
-              <div className="text-sm font-mono font-bold text-emerald-400 tabular-nums">
-                {passedCount.toLocaleString("en-US")}
-              </div>
-              <div className="text-[9px] font-mono text-zinc-600 uppercase tracking-wider">Passed</div>
-            </div>
-            <div className="text-center">
-              <div className="text-sm font-mono font-bold text-red-400 tabular-nums">
-                {failedCount.toLocaleString("en-US")}
-              </div>
-              <div className="text-[9px] font-mono text-zinc-600 uppercase tracking-wider">Failed</div>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* ── Telemetry Grid ── */}
-      <motion.div
-        variants={staggerContainer}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-40px" }}
-        className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6"
+        animate="visible"
+        className="grid grid-cols-2 md:grid-cols-4 gap-4"
       >
         {[
-          {
-            label: "Throughput RPS",
-            value: Math.round(throughputRPS),
-            unit: "req/s",
-            color: "#06b6d4",
-            points: rpsPoints,
-            subLabel: "Poisson dist.",
-          },
-          {
-            label: "P99 Latency",
-            value: Math.round(p99Latency),
-            unit: "ms",
-            color: p99Latency > 200 ? "#f59e0b" : "#10b981",
-            points: latencyPoints,
-            subLabel: "tail latency",
-          },
-          {
-            label: "Flakiness Index",
-            value: parseFloat(flakiness.toFixed(1)),
-            unit: "%",
-            color: flakiness > 5 ? "#ef4444" : "#a78bfa",
-            points: flakinessPoints,
-            subLabel: "variance model",
-          },
-          {
-            label: "Mutation Score",
-            value: 87,
-            unit: "%",
-            color: "#f59e0b",
-            points: healthPoints,
-            subLabel: "Stryker v7",
-          },
-        ].map((panel) => (
-          <motion.div key={panel.label} variants={scaleIn}>
-            <TelemetryPanel {...panel} />
+          { label: "System Health", value: `${systemHealth.toFixed(1)}%`, color: "#10b981", icon: Activity },
+          { label: "P99 Latency", value: `${Math.round(p99Latency)}ms`, color: "#06b6d4", icon: Zap },
+          { label: "Pass Rate", value: `${passRate}%`, color: "#10b981", icon: CheckCircle },
+          { label: "Throughput", value: `${Math.round(throughputRPS).toLocaleString("en-US")} RPS`, color: "#f59e0b", icon: Activity },
+        ].map((kpi) => (
+          <motion.div
+            key={kpi.label}
+            variants={scaleIn}
+            className="rounded-lg p-4 border"
+            style={{
+              background: "rgba(9,9,11,0.8)",
+              borderColor: `${kpi.color}20`,
+              backdropFilter: "blur(12px)",
+            }}
+          >
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">{kpi.label}</span>
+              <kpi.icon size={12} style={{ color: kpi.color }} />
+            </div>
+            <div
+              className="text-xl font-mono font-bold tabular-nums"
+              style={{ color: kpi.color, textShadow: `0 0 12px ${kpi.color}50` }}
+            >
+              {kpi.value}
+            </div>
           </motion.div>
         ))}
       </motion.div>
 
-      {/* ── Live Terminal ── */}
-      <motion.div
-        variants={fadeInUp}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-40px" }}
-        className="mb-6"
-      >
-        <div className="flex items-center gap-2 mb-3">
-          <Terminal size={13} className="text-emerald-400" />
-          <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">
-            Live Playwright Output
-          </span>
-        </div>
-        <LiveTerminal lines={terminalLines} />
-      </motion.div>
-
-      {/* ── Test Runs Table ── */}
-      <motion.div
-        variants={fadeInUp}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-40px" }}
-        className="mb-6"
-      >
-        <div
-          className="rounded-xl overflow-hidden"
+      {/* ── Main grid ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* ── Test Runs table ── */}
+        <motion.div
+          variants={fadeInUp}
+          initial="hidden"
+          animate="visible"
+          className="lg:col-span-2 rounded-lg border overflow-hidden"
           style={{
-            background: "rgba(9,9,11,0.7)",
-            border: "1px solid rgba(255,255,255,0.06)",
-            boxShadow: "0 8px 32px -8px rgba(0,0,0,0.5)",
+            background: "rgba(9,9,11,0.8)",
+            borderColor: "rgba(16,185,129,0.12)",
+            backdropFilter: "blur(12px)",
           }}
         >
           {/* Table header */}
           <div
-            className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-5 py-4"
-            style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+            className="flex items-center justify-between px-4 py-3 border-b"
+            style={{ borderColor: "rgba(16,185,129,0.1)" }}
           >
-            <div>
-              <h2 className="text-xs font-mono font-bold text-zinc-200 uppercase tracking-widest">
-                Recent Test Runs
-              </h2>
-              <p className="text-[10px] font-mono text-zinc-600 mt-0.5">
-                {filteredRuns.length} of {MOCK_RUNS.length} runs shown
-              </p>
+            <div className="flex items-center gap-2">
+              <Terminal size={14} className="text-emerald-400" />
+              <span className="text-xs font-mono text-emerald-400 font-bold uppercase tracking-wider">Test Runs</span>
             </div>
-            <div className="flex items-center gap-2 flex-wrap">
-              {/* Search */}
-              <div
-                className="flex items-center gap-2 px-3 py-1.5 rounded-lg"
-                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
+            <div className="relative">
+              <Search size={11} className="absolute left-2 top-1/2 -translate-y-1/2 text-zinc-600" />
+              <input
+                type="text"
+                placeholder="Search suites…"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="bg-zinc-900/60 border border-zinc-800 rounded text-[11px] font-mono text-zinc-400 pl-6 pr-3 py-1 focus:outline-none focus:border-emerald-500/40 w-44"
+              />
+            </div>
+          </div>
+
+          {/* Column headers */}
+          <div
+            className="grid grid-cols-12 gap-2 px-4 py-2 border-b text-[10px] font-mono text-zinc-600 uppercase tracking-wider"
+            style={{ borderColor: "rgba(16,185,129,0.06)" }}
+          >
+            <span className="col-span-1">ID</span>
+            <span className="col-span-4">Suite</span>
+            <span className="col-span-2">Status</span>
+            <span className="col-span-1">Tests</span>
+            <span className="col-span-1">Pass</span>
+            <span className="col-span-1">Fail</span>
+            <span className="col-span-1">Time</span>
+            <span className="col-span-1">Env</span>
+          </div>
+
+          {/* Rows */}
+          <div className="divide-y" style={{ borderColor: "rgba(16,185,129,0.04)" }}>
+            {filteredRuns.map((run) => (
+              <motion.div
+                key={run.id}
+                whileHover={{ backgroundColor: "rgba(16,185,129,0.03)" }}
+                onClick={() => setSelectedRun(run)}
+                className="grid grid-cols-12 gap-2 px-4 py-2.5 cursor-pointer transition-colors"
+                style={{
+                  borderBottom: "1px solid rgba(16,185,129,0.04)",
+                  background: selectedRun?.id === run.id ? "rgba(16,185,129,0.05)" : "transparent",
+                }}
               >
-                <Search size={11} className="text-zinc-500" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search suites..."
-                  className="bg-transparent text-[11px] font-mono text-zinc-300 placeholder-zinc-600 outline-none w-28"
-                />
-              </div>
-              {/* Filter tabs */}
-              {filterTabs.map((tab) => (
-                <button
-                  key={tab.key}
-                  onClick={() => setActiveFilter(tab.key)}
-                  className="text-[9px] font-mono px-2 py-1 rounded transition-all duration-200"
+                <span className="col-span-1 text-[10px] font-mono text-zinc-600 truncate">{run.id}</span>
+                <span className="col-span-4 text-[11px] font-mono text-zinc-300 truncate">{run.suite}</span>
+                <span className="col-span-2">
+                  <StatusBadge status={run.status} />
+                </span>
+                <span className="col-span-1 text-[11px] font-mono text-zinc-400 tabular-nums">{run.tests || "—"}</span>
+                <span className="col-span-1 text-[11px] font-mono tabular-nums" style={{ color: "#10b981" }}>{run.passed || "—"}</span>
+                <span className="col-span-1 text-[11px] font-mono tabular-nums" style={{ color: run.failed > 0 ? "#ef4444" : "#3f3f46" }}>{run.failed || "—"}</span>
+                <span className="col-span-1 text-[10px] font-mono text-zinc-600 tabular-nums">{run.timestamp}</span>
+                <span
+                  className="col-span-1 text-[10px] font-mono uppercase"
                   style={{
-                    color: activeFilter === tab.key ? "#10b981" : "#52525b",
-                    background: activeFilter === tab.key ? "rgba(16,185,129,0.1)" : "transparent",
-                    border: `1px solid ${activeFilter === tab.key ? "rgba(16,185,129,0.3)" : "rgba(255,255,255,0.06)"}`,
+                    color:
+                      run.env === "production"
+                        ? "#ef4444"
+                        : run.env === "staging"
+                        ? "#06b6d4"
+                        : "#f59e0b",
                   }}
                 >
-                  {tab.label}
-                </button>
-              ))}
+                  {run.env}
+                </span>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Summary footer */}
+          <div
+            className="flex items-center justify-between px-4 py-2 border-t"
+            style={{ borderColor: "rgba(16,185,129,0.08)" }}
+          >
+            <span className="text-[10px] font-mono text-zinc-600">
+              {filteredRuns.length} runs · {totalTests.toLocaleString("en-US")} tests
+            </span>
+            <div className="flex items-center gap-4">
+              <span className="text-[10px] font-mono" style={{ color: "#10b981" }}>
+                ✓ {totalPassed.toLocaleString("en-US")} passed
+              </span>
+              <span className="text-[10px] font-mono" style={{ color: "#ef4444" }}>
+                ✗ {totalFailed.toLocaleString("en-US")} failed
+              </span>
             </div>
           </div>
-          {/* Table */}
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-                  {["Run ID", "Suite", "Status", "Tests", "Pass", "Fail", "Rate", "Duration", "Env"].map(
-                    (col) => (
-                      <th
-                        key={col}
-                        className="text-left py-2 px-3 text-[9px] font-mono uppercase tracking-widest text-zinc-600"
-                      >
-                        {col}
-                      </th>
-                    )
-                  )}
-                </tr>
-              </thead>
-              <tbody>
-                {filteredRuns.map((run, i) => (
-                  <TestRunRow key={run.id} run={run} index={i} />
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </motion.div>
+        </motion.div>
 
-      {/* ── Tech Stack ── */}
-      <motion.div
-        variants={fadeInUp}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-40px" }}
-        className="mb-6"
-      >
-        <div className="flex items-center gap-2 mb-3">
-          <Settings size={13} className="text-zinc-500" />
-          <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">
-            Active Tech Stack
-          </span>
-        </div>
-        <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          className="flex flex-wrap gap-2"
-        >
-          {techStack.map((tech, i) => (
-            <motion.span
-              key={tech}
+        {/* ── Right column: Pipeline + Selected run ── */}
+        <div className="space-y-4">
+          {/* Pipeline status */}
+          <motion.div
+            variants={fadeInUp}
+            initial="hidden"
+            animate="visible"
+            className="rounded-lg border p-4"
+            style={{
+              background: "rgba(9,9,11,0.8)",
+              borderColor: "rgba(16,185,129,0.12)",
+              backdropFilter: "blur(12px)",
+            }}
+          >
+            <div className="flex items-center gap-2 mb-3">
+              <GitBranch size={13} className="text-emerald-400" />
+              <span className="text-xs font-mono text-emerald-400 font-bold uppercase tracking-wider">Pipeline Gate</span>
+            </div>
+            <div className="space-y-2">
+              {pipelineStages.map((stage) => (
+                <div key={stage.id} className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <PipelineDot status={stage.id} color={stage.color} />
+                    <span className="text-[11px] font-mono text-zinc-400">{stage.label}</span>
+                  </div>
+                  <span
+                    className="text-[10px] font-mono uppercase"
+                    style={{
+                      color:
+                        PIPELINE_STATUS[stage.id] === "passed"
+                          ? "#10b981"
+                          : PIPELINE_STATUS[stage.id] === "failed"
+                          ? "#ef4444"
+                          : PIPELINE_STATUS[stage.id] === "running"
+                          ? "#06b6d4"
+                          : "#3f3f46",
+                    }}
+                  >
+                    {PIPELINE_STATUS[stage.id] ?? "idle"}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Selected run detail */}
+          {selectedRun && (
+            <motion.div
+              key={selectedRun.id}
               variants={scaleIn}
-              whileHover={{ scale: 1.06, y: -2 }}
-              className="text-[10px] font-mono px-3 py-1.5 rounded-lg cursor-default transition-all duration-200"
+              initial="hidden"
+              animate="visible"
+              className="rounded-lg border p-4"
               style={{
-                color: "#06b6d4",
-                background: "rgba(6,182,212,0.06)",
-                border: "1px solid rgba(6,182,212,0.15)",
-                boxShadow: "0 2px 8px -2px rgba(6,182,212,0.1)",
+                background: "rgba(9,9,11,0.8)",
+                borderColor: "rgba(16,185,129,0.12)",
+                backdropFilter: "blur(12px)",
               }}
             >
-              {tech}
-            </motion.span>
-          ))}
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Eye size={13} className="text-cyan-400" />
+                  <span className="text-xs font-mono text-cyan-400 font-bold uppercase tracking-wider">Run Detail</span>
+                </div>
+                <button
+                  onClick={() => setSelectedRun(null)}
+                  className="text-zinc-600 hover:text-zinc-400 transition-colors"
+                >
+                  <X size={12} />
+                </button>
+              </div>
+              <div className="space-y-2">
+                <div>
+                  <div className="text-[10px] font-mono text-zinc-600 uppercase tracking-wider mb-0.5">Suite</div>
+                  <div className="text-xs font-mono text-zinc-300">{selectedRun.suite}</div>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <div className="text-[10px] font-mono text-zinc-600 uppercase tracking-wider mb-0.5">Duration</div>
+                    <div className="text-xs font-mono text-zinc-400">{selectedRun.duration}</div>
+                  </div>
+                  <div>
+                    <div className="text-[10px] font-mono text-zinc-600 uppercase tracking-wider mb-0.5">Env</div>
+                    <div
+                      className="text-xs font-mono uppercase"
+                      style={{
+                        color:
+                          selectedRun.env === "production"
+                            ? "#ef4444"
+                            : selectedRun.env === "staging"
+                            ? "#06b6d4"
+                            : "#f59e0b",
+                      }}
+                    >
+                      {selectedRun.env}
+                    </div>
+                  </div>
+                </div>
+                {selectedRun.tests > 0 && (
+                  <div>
+                    <div className="text-[10px] font-mono text-zinc-600 uppercase tracking-wider mb-1">Pass / Fail</div>
+                    <div className="flex items-center gap-2">
+                      <div
+                        className="h-1.5 rounded-full flex-1 overflow-hidden"
+                        style={{ background: "rgba(239,68,68,0.2)" }}
+                      >
+                        <div
+                          className="h-full rounded-full"
+                          style={{
+                            width: `${(selectedRun.passed / selectedRun.tests) * 100}%`,
+                            background: "#10b981",
+                          }}
+                        />
+                      </div>
+                      <span className="text-[10px] font-mono" style={{ color: "#10b981" }}>
+                        {((selectedRun.passed / selectedRun.tests) * 100).toFixed(1)}%
+                      </span>
+                    </div>
+                  </div>
+                )}
+                <div>
+                  <div className="text-[10px] font-mono text-zinc-600 uppercase tracking-wider mb-0.5">Timestamp</div>
+                  <div className="text-xs font-mono text-zinc-500">{selectedRun.timestamp}</div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </div>
+      </div>
+
+      {/* ── Telemetry sparklines ── */}
+      <motion.div
+        variants={staggerContainer}
+        initial="hidden"
+        animate="visible"
+        className="grid grid-cols-1 md:grid-cols-2 gap-4"
+      >
+        {/* Throughput */}
+        <motion.div
+          variants={fadeInUp}
+          className="rounded-lg border p-4"
+          style={{
+            background: "rgba(9,9,11,0.8)",
+            borderColor: "rgba(6,182,212,0.12)",
+            backdropFilter: "blur(12px)",
+          }}
+        >
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Zap size={13} style={{ color: "#06b6d4" }} />
+              <span className="text-xs font-mono font-bold uppercase tracking-wider" style={{ color: "#06b6d4" }}>
+                Throughput RPS
+              </span>
+            </div>
+            <span className="text-lg font-mono font-bold tabular-nums" style={{ color: "#06b6d4" }}>
+              {Math.round(throughputRPS).toLocaleString("en-US")}
+            </span>
+          </div>
+          <div className="w-full">
+            <Sparkline
+              points={throughputPoints}
+              color="#06b6d4"
+              height={48}
+              width={320}
+              filled
+            />
+          </div>
+          <div className="mt-2 text-[10px] font-mono text-zinc-600">
+            Poisson-distributed traffic simulation · Veridat API endpoints
+          </div>
+        </motion.div>
+
+        {/* Flakiness */}
+        <motion.div
+          variants={fadeInUp}
+          className="rounded-lg border p-4"
+          style={{
+            background: "rgba(9,9,11,0.8)",
+            borderColor: "rgba(245,158,11,0.12)",
+            backdropFilter: "blur(12px)",
+          }}
+        >
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <AlertTriangle size={13} style={{ color: "#f59e0b" }} />
+              <span className="text-xs font-mono font-bold uppercase tracking-wider" style={{ color: "#f59e0b" }}>
+                Flakiness Regression Index
+              </span>
+            </div>
+            <span className="text-lg font-mono font-bold tabular-nums" style={{ color: "#f59e0b" }}>
+              {flakinessPoints.length > 0
+                ? flakinessPoints[flakinessPoints.length - 1].value.toFixed(1)
+                : "0.0"}%
+            </span>
+          </div>
+          <div className="w-full">
+            <Sparkline
+              points={flakinessPoints}
+              color="#f59e0b"
+              height={48}
+              width={320}
+              filled
+            />
+          </div>
+          <div className="mt-2 text-[10px] font-mono text-zinc-600">
+            Variance model · Stripe & dataset upload flakiness tracked
+          </div>
         </motion.div>
       </motion.div>
 
-      {/* ── Alert Banner ── */}
+      {/* ── Terminal ── */}
       <motion.div
         variants={fadeInUp}
         initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-20px" }}
+        animate="visible"
+        className="rounded-lg border overflow-hidden"
+        style={{
+          background: "rgba(5,5,7,0.95)",
+          borderColor: "rgba(16,185,129,0.12)",
+          backdropFilter: "blur(12px)",
+        }}
       >
+        {/* Terminal header */}
         <div
-          className="rounded-xl p-4 flex items-start gap-3"
-          style={{
-            background: "rgba(239,68,68,0.05)",
-            border: "1px solid rgba(239,68,68,0.2)",
-            boxShadow: "0 4px 24px -8px rgba(239,68,68,0.15)",
-          }}
+          className="flex items-center justify-between px-4 py-2.5 border-b"
+          style={{ borderColor: "rgba(16,185,129,0.1)" }}
         >
-          <AlertTriangle size={14} className="text-red-400 mt-0.5 shrink-0" />
-          <div>
-            <p className="text-xs font-mono font-bold text-red-400">Flaky Test Detected</p>
-            <p className="text-[10px] font-mono text-zinc-500 mt-0.5">
-              checkout/cart.spec.ts:88 failed 3 consecutive retries across webkit. Discount code validation
-              returning INVALID_CODE. Assigned to QE-Team-Alpha for triage. Trace ID: 4f2a1b.
-            </p>
+          <div className="flex items-center gap-2">
+            <div className="flex gap-1.5">
+              <div className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
+              <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/60" />
+              <div className="w-2.5 h-2.5 rounded-full bg-green-500/60" />
+            </div>
+            <Terminal size={12} className="text-emerald-400 ml-1" />
+            <span className="text-[11px] font-mono text-emerald-400 font-bold">playwright · veridat-qa-suite</span>
+            <span
+              className="text-[9px] font-mono px-1.5 py-0.5 rounded"
+              style={{ background: "rgba(16,185,129,0.1)", color: "#10b981", border: "1px solid rgba(16,185,129,0.2)" }}
+            >
+              LIVE
+            </span>
           </div>
-          <div className="ml-auto flex items-center gap-1.5 shrink-0">
-            <Eye size={11} className="text-zinc-600" />
-            <span className="text-[9px] font-mono text-zinc-600">09:41:19</span>
-          </div>
+          <button
+            onClick={() => setTerminalPaused((p) => !p)}
+            className="text-[10px] font-mono px-2 py-1 rounded transition-colors"
+            style={{
+              color: terminalPaused ? "#10b981" : "#f59e0b",
+              background: terminalPaused ? "rgba(16,185,129,0.08)" : "rgba(245,158,11,0.08)",
+              border: `1px solid ${terminalPaused ? "rgba(16,185,129,0.2)" : "rgba(245,158,11,0.2)"}`,
+            }}
+          >
+            {terminalPaused ? "▶ RESUME" : "⏸ PAUSE"}
+          </button>
         </div>
+
+        {/* Terminal body */}
+        <div
+          ref={terminalRef}
+          className="h-64 overflow-y-auto p-4 space-y-0.5"
+          style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(16,185,129,0.2) transparent" }}
+        >
+          {terminalLines.map((line) => (
+            <div key={line.id} className="flex items-start gap-3 font-mono text-[11px] leading-5">
+              <span className="text-zinc-700 tabular-nums shrink-0 w-16">{line.ts}</span>
+              <span style={{ color: terminalColor(line.type) }} className="break-all">
+                {line.text}
+              </span>
+            </div>
+          ))}
+          {!terminalPaused && (
+            <div className="flex items-center gap-1 font-mono text-[11px]">
+              <span className="text-zinc-700 tabular-nums w-16">——</span>
+              <span className="text-emerald-400 animate-pulse">█</span>
+            </div>
+          )}
+        </div>
+      </motion.div>
+
+      {/* ── Tech stack ── */}
+      <motion.div
+        variants={staggerContainer}
+        initial="hidden"
+        animate="visible"
+        className="rounded-lg border p-4"
+        style={{
+          background: "rgba(9,9,11,0.8)",
+          borderColor: "rgba(16,185,129,0.08)",
+          backdropFilter: "blur(12px)",
+        }}
+      >
+        <motion.div variants={fadeInUp} className="flex items-center gap-2 mb-3">
+          <Sparkles size={13} className="text-emerald-400" />
+          <span className="text-xs font-mono text-emerald-400 font-bold uppercase tracking-wider">QA Stack · Rao Muhammad Ali</span>
+        </motion.div>
+        <motion.div variants={fadeInUp} className="flex flex-wrap gap-2">
+          {techStack.map((tech) => (
+            <span
+              key={tech}
+              className="text-[10px] font-mono px-2 py-1 rounded"
+              style={{
+                background: "rgba(16,185,129,0.06)",
+                color: "#10b981",
+                border: "1px solid rgba(16,185,129,0.15)",
+              }}
+            >
+              {tech}
+            </span>
+          ))}
+        </motion.div>
       </motion.div>
     </div>
   );

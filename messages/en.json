@@ -6,9 +6,9 @@
     "methodology": "Methodology"
   },
   "brand": {
-    "name": "QE Command Center",
-    "tagline": "Enterprise Quality Engineering Infrastructure",
-    "version": "v4.2.1"
+    "name": "Rao Muhammad Ali",
+    "tagline": "Software Quality Assurance Engineer · DaticsAI",
+    "version": "v1.0.0"
   },
   "footer": {
     "copyright": "All systems nominal.",
@@ -65,9 +65,9 @@
     "startRun": "Start Test Run"
   },
   "hero": {
-    "title": "Quality Engineering Command Center",
-    "subtitle": "Enterprise-grade testing infrastructure with real-time telemetry, chaos engineering, and 3D visualizations.",
-    "cta": "Launch Mission Control",
+    "title": "Rao Muhammad Ali — SQA Engineer",
+    "subtitle": "Applying modern testing techniques with a clear understanding of the SDLC. Experienced in functional, regression, usability, compatibility, and exploratory testing at DaticsAI, Lahore, Pakistan.",
+    "cta": "View Mission Control",
     "secondary": "View Methodology"
   }
 }

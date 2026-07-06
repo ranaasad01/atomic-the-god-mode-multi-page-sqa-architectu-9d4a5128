@@ -58,7 +58,7 @@ export default function Footer() {
               {brand.name}
             </h2>
             <p className="text-xs font-mono text-zinc-600 max-w-xs">
-              {brand.tagline}. Built for engineers who demand precision at scale.
+              Software Quality Assurance Engineer · DaticsAI, Lahore, Pakistan · raomali005@gmail.com
             </p>
           </div>
 
@@ -112,24 +112,22 @@ export default function Footer() {
         <motion.div
           variants={fadeInUp}
           className="flex flex-col md:flex-row justify-between items-center gap-4 pt-6"
-          style={{ borderTop: "1px solid rgba(16,185,129,0.08)" }}
+          style={{ borderTop: "1px solid rgba(16,185,129,0.06)" }}
         >
-          <div className="text-[10px] font-mono text-zinc-700">
-            &copy; 2024 {brand.name}. All systems nominal.
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1.5">
-              <span
-                className="w-1.5 h-1.5 rounded-full animate-pulse"
-                style={{ backgroundColor: "#10b981" }}
-              />
-              <span className="text-[10px] font-mono text-zinc-600">
-                TELEMETRY ACTIVE
-              </span>
-            </div>
-            <div className="text-[10px] font-mono text-zinc-700">
-              Next.js 14 + TypeScript + Zustand
-            </div>
+          <p className="text-[10px] font-mono text-zinc-700">
+            © {new Date().getFullYear()} {brand.name} · {t("footer.copyright")}
+          </p>
+          <div className="flex items-center gap-2">
+            <div
+              className="w-1.5 h-1.5 rounded-full animate-pulse"
+              style={{ backgroundColor: "#10b981" }}
+            />
+            <span className="text-[10px] font-mono text-zinc-600">
+              {t("footer.telemetry")}
+            </span>
+            <span className="text-[10px] font-mono text-zinc-700 ml-2">
+              {t("footer.stack")}
+            </span>
           </div>
         </motion.div>
       </motion.div>

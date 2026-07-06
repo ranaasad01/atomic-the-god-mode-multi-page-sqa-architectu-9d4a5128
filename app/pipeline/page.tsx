@@ -117,384 +117,509 @@ const SEVERITY_BG: Record<string, string> = {
   critical: "rgba(239,68,68,0.08)",
 };
 
-// ─── Initial pipeline stages ─────────────────────────────────────────────────
+// ─── Initial pipeline stages (updated for Rao Muhammad Ali's QA workflow) ────
 
 const INITIAL_STAGES: PipelineStage[] = [
-  { id: "lint", label: "Lint", icon: "FileCode", color: "#06b6d4", status: "passed", duration: 4.2, tests: 0 },
-  { id: "unit", label: "Unit Tests", icon: "Check", color: "#10b981", status: "passed", duration: 18.7, tests: 3847 },
-  { id: "mutation", label: "Mutation", icon: "Activity", color: "#f59e0b", status: "passed", duration: 94.1, tests: 1204 },
-  { id: "integration", label: "Integration", icon: "GitBranch", color: "#06b6d4", status: "running", duration: null, tests: 892 },
-  { id: "e2e", label: "E2E Suite", icon: "Terminal", color: "#10b981", status: "idle", duration: null, tests: 478 },
-  { id: "security", label: "Security Scan", icon: "Lock", color: "#ef4444", status: "idle", duration: null, tests: 0 },
+  {
+    id: "lint",
+    label: "ESLint + Prettier",
+    icon: "FileCode",
+    color: "#06b6d4",
+    status: "passed",
+    duration: 4.2,
+    tests: 0,
+  },
+  {
+    id: "unit",
+    label: "Functional & Unit Coverage",
+    icon: "Check",
+    color: "#10b981",
+    status: "passed",
+    duration: 18.7,
+    tests: 312,
+  },
+  {
+    id: "mutation",
+    label: "Regression Analysis",
+    icon: "Activity",
+    color: "#f59e0b",
+    status: "running",
+    duration: null,
+    tests: 198,
+  },
+  {
+    id: "integration",
+    label: "API Integration Tests (Postman/Playwright)",
+    icon: "GitBranch",
+    color: "#06b6d4",
+    status: "idle",
+    duration: null,
+    tests: 0,
+  },
+  {
+    id: "e2e",
+    label: "E2E Playwright — Veridat Platform",
+    icon: "Terminal",
+    color: "#10b981",
+    status: "idle",
+    duration: null,
+    tests: 0,
+  },
+  {
+    id: "security",
+    label: "Auth & RBAC Security Scan",
+    icon: "Lock",
+    color: "#ef4444",
+    status: "idle",
+    duration: null,
+    tests: 0,
+  },
 ];
 
-// ─── Chaos event templates ────────────────────────────────────────────────────
+// ─── Chaos events (updated to reflect Rao's QA scenarios) ────────────────────
 
-const CHAOS_TEMPLATES = [
-  { type: "NETWORK_PARTITION", description: "Simulated network partition between service mesh nodes", impact: "P99 +380ms, 12 E2E failures" },
-  { type: "CPU_THROTTLE", description: "CPU starvation injected into test runner pods", impact: "Throughput -42%, timeout cascade" },
-  { type: "MEMORY_PRESSURE", description: "OOM condition triggered on integration test cluster", impact: "3 worker crashes, retry storm" },
-  { type: "PACKET_LOSS", description: "15% packet loss applied to external API endpoints", impact: "Flakiness index +0.34" },
-  { type: "LATENCY_SPIKE", description: "Artificial 500ms jitter injected into DB connections", impact: "P99 +620ms, SLA breach" },
-  { type: "DNS_FAILURE", description: "DNS resolution failures for downstream dependencies", impact: "8 integration tests failed" },
+const INITIAL_CHAOS_EVENTS: ChaosEvent[] = [
+  {
+    id: "ce-001",
+    timestamp: "14:22:07",
+    type: "network-throttle",
+    severity: "medium",
+    description: "Network throttle applied — simulating 3G mobile connection for mobile viewport tests",
+    impact: "Page load time increased to 4.2s, LCP degraded on mobile breakpoints",
+  },
+  {
+    id: "ce-002",
+    timestamp: "14:31:44",
+    type: "api-fault",
+    severity: "high",
+    description: "API endpoint /api/datasets returned 500 — fault injected for error handling validation",
+    impact: "Error boundary triggered, retry logic validated, user-facing error message confirmed",
+  },
+  {
+    id: "ce-003",
+    timestamp: "14:38:12",
+    type: "session-timeout",
+    severity: "medium",
+    description: "Session timeout simulated — verifying OTP re-authentication flow",
+    impact: "OTP re-auth modal displayed correctly, session restored after verification",
+  },
+  {
+    id: "ce-004",
+    timestamp: "14:45:00",
+    type: "stress-test",
+    severity: "critical",
+    description: "Large file upload (2GB) stress test initiated — monitoring memory and timeout behavior",
+    impact: "Memory usage peaked at 87%, upload timeout at 120s, progress indicator validated",
+  },
 ];
 
-// ─── SVG Ring Gauge ───────────────────────────────────────────────────────────
+// ─── Gate rules (updated to Rao's QA standards) ───────────────────────────────
 
-function RingGauge({ value, label, color, size = 140 }: { value: number; label: string; color: string; size?: number }) {
-  const radius = (size - 20) / 2;
-  const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - (value / 100) * circumference;
-  const cx = size / 2;
-  const cy = size / 2;
+const GATE_RULES = [
+  {
+    id: "gr-001",
+    label: "Pass Rate ≥ 95%",
+    current: "97.2%",
+    status: "pass" as const,
+    description: "All functional and regression test suites must maintain a minimum 95% pass rate before pipeline proceeds.",
+  },
+  {
+    id: "gr-002",
+    label: "API Response Time < 500ms",
+    current: "142ms",
+    status: "pass" as const,
+    description: "All Postman/Playwright API integration tests must respond within 500ms under standard load conditions.",
+  },
+  {
+    id: "gr-003",
+    label: "Zero Critical Security Failures",
+    current: "0",
+    status: "pass" as const,
+    description: "Auth flows, OTP verification, session handling, and RBAC must pass with zero critical security violations.",
+  },
+  {
+    id: "gr-004",
+    label: "Cross-Platform Coverage: macOS, Linux, Windows",
+    current: "PASS",
+    status: "pass" as const,
+    description: "Desktop application tests must pass across all three target platforms before release gate opens.",
+  },
+];
 
-  return (
-    <div className="flex flex-col items-center gap-2">
-      <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
-        <circle
-          cx={cx}
-          cy={cy}
-          r={radius}
-          fill="none"
-          stroke="rgba(255,255,255,0.05)"
-          strokeWidth={8}
-        />
-        <motion.circle
-          cx={cx}
-          cy={cy}
-          r={radius}
-          fill="none"
-          stroke={color}
-          strokeWidth={8}
-          strokeLinecap="round"
-          strokeDasharray={circumference}
-          initial={{ strokeDashoffset: circumference }}
-          animate={{ strokeDashoffset }}
-          transition={{ duration: 1.2, ease: "easeOut" }}
-          style={{ filter: `drop-shadow(0 0 6px ${color})` }}
-        />
-      </svg>
-      <div style={{ marginTop: -size * 0.62, position: "relative", zIndex: 1, textAlign: "center" }}>
-        <div className="text-2xl font-mono font-bold tabular-nums" style={{ color }}>
-          {value.toFixed(1)}
-          <span className="text-sm">%</span>
-        </div>
-        <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mt-0.5">{label}</div>
-      </div>
-    </div>
-  );
-}
+// ─── Sub-components ───────────────────────────────────────────────────────────
 
-// ─── Conveyor Pipeline ────────────────────────────────────────────────────────
-
-const stageVariants: Variants = {
-  hidden: { opacity: 0, scale: 0.8, y: 20 },
-  visible: (i: number) => ({
-    opacity: 1,
-    scale: 1,
-    y: 0,
-    transition: { delay: i * 0.12, duration: 0.5, ease: "easeOut" },
-  }),
-};
-
-function StageStatusIcon({ status }: { status: StageStatus }) {
-  if (status === "passed") return <Check size={12} className="text-emerald-400" />;
-  if (status === "failed") return <XCircle size={12} className="text-red-400" />;
-  if (status === "running") return (
-    <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }}>
-      <RefreshCw size={12} className="text-cyan-400" />
-    </motion.div>
-  );
-  if (status === "skipped") return <ChevronRight size={12} className="text-zinc-500" />;
-  return <Clock size={12} className="text-zinc-600" />;
-}
-
-function ConveyorPipeline({
-  stages,
-  isFaultInjected,
+function StageNode({
+  stage,
+  index,
+  isLast,
 }: {
-  stages: PipelineStage[];
-  isFaultInjected: boolean;
+  stage: PipelineStage;
+  index: number;
+  isLast: boolean;
 }) {
   const statusColors: Record<StageStatus, string> = {
+    idle: "#3f3f46",
+    running: "#f59e0b",
     passed: "#10b981",
     failed: "#ef4444",
-    running: "#06b6d4",
-    idle: "#3f3f46",
-    skipped: "#71717a",
+    skipped: "#6b7280",
   };
 
   const statusBg: Record<StageStatus, string> = {
-    passed: "rgba(16,185,129,0.08)",
+    idle: "rgba(63,63,70,0.15)",
+    running: "rgba(245,158,11,0.12)",
+    passed: "rgba(16,185,129,0.12)",
     failed: "rgba(239,68,68,0.12)",
-    running: "rgba(6,182,212,0.1)",
-    idle: "rgba(63,63,70,0.3)",
-    skipped: "rgba(113,113,122,0.1)",
+    skipped: "rgba(107,114,128,0.12)",
   };
 
-  return (
-    <div className="relative w-full overflow-x-auto pb-2">
-      <div className="flex items-center gap-0 min-w-max">
-        {stages.map((stage, i) => (
-          <div key={stage.id} className="flex items-center">
-            <motion.div
-              custom={i}
-              variants={stageVariants}
-              initial="hidden"
-              animate="visible"
-              whileHover={{ scale: 1.05, y: -2 }}
-              className="relative flex flex-col items-center gap-2 px-4 py-3 rounded-xl cursor-default"
-              style={{
-                background: statusBg[stage.status],
-                border: `1px solid ${statusColors[stage.status]}30`,
-                boxShadow: stage.status === "running"
-                  ? `0 0 20px ${statusColors[stage.status]}30`
-                  : stage.status === "failed" && isFaultInjected
-                  ? "0 0 24px rgba(239,68,68,0.4)"
-                  : "none",
-                minWidth: 110,
-              }}
-            >
-              {stage.status === "running" && (
-                <motion.div
-                  className="absolute inset-0 rounded-xl"
-                  animate={{ opacity: [0.3, 0.7, 0.3] }}
-                  transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-                  style={{ background: `radial-gradient(ellipse at center, ${statusColors[stage.status]}15, transparent)` }}
-                />
-              )}
-              <div className="flex items-center gap-1.5">
-                <span style={{ color: statusColors[stage.status] }}>
-                  {ICON_MAP[stage.icon] ?? <Activity size={14} />}
-                </span>
-                <span className="text-xs font-mono font-semibold text-zinc-200">{stage.label}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <StageStatusIcon status={stage.status} />
-                <span className="text-[10px] font-mono" style={{ color: statusColors[stage.status] }}>
-                  {stage.status.toUpperCase()}
-                </span>
-              </div>
-              {stage.duration !== null && (
-                <div className="text-[9px] font-mono text-zinc-500">{stage.duration.toFixed(1)}s</div>
-              )}
-              {stage.tests > 0 && (
-                <div className="text-[9px] font-mono text-zinc-600">{stage.tests.toLocaleString("en-US")} tests</div>
-              )}
-            </motion.div>
+  const color = statusColors[stage.status];
+  const bg = statusBg[stage.status];
 
-            {i < stages.length - 1 && (
-              <div className="flex items-center px-1">
-                <motion.div
-                  className="h-px w-8"
-                  style={{
-                    background: stage.status === "passed"
-                      ? "linear-gradient(90deg, #10b981, #06b6d4)"
-                      : "rgba(63,63,70,0.5)",
-                  }}
-                  animate={stage.status === "running" ? { opacity: [0.4, 1, 0.4] } : {}}
-                  transition={{ repeat: Infinity, duration: 1 }}
-                />
-                <ChevronRight size={12} className="text-zinc-600 -ml-1" />
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// ─── Chaos Slider ─────────────────────────────────────────────────────────────
-
-function ChaosSlider({
-  label,
-  value,
-  min,
-  max,
-  unit,
-  color,
-  icon,
-  onChange,
-}: {
-  label: string;
-  value: number;
-  min: number;
-  max: number;
-  unit: string;
-  color: string;
-  icon: React.ReactNode;
-  onChange: (v: number) => void;
-}) {
-  const pct = ((value - min) / (max - min)) * 100;
-  return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span style={{ color }}>{icon}</span>
-          <span className="text-xs font-mono text-zinc-300">{label}</span>
-        </div>
-        <span className="text-xs font-mono tabular-nums" style={{ color }}>
-          {value}
-          {unit}
-        </span>
-      </div>
-      <div className="relative h-2 rounded-full" style={{ background: "rgba(255,255,255,0.06)" }}>
-        <motion.div
-          className="absolute left-0 top-0 h-full rounded-full"
-          style={{
-            width: `${pct}%`,
-            background: `linear-gradient(90deg, ${color}80, ${color})`,
-            boxShadow: `0 0 8px ${color}60`,
-          }}
-          animate={{ width: `${pct}%` }}
-          transition={{ duration: 0.3 }}
-        />
-        <input
-          type="range"
-          min={min}
-          max={max}
-          value={value}
-          onChange={(e) => onChange(Number(e.target.value))}
-          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-        />
-      </div>
-    </div>
-  );
-}
-
-// ─── Fault Log Panel ──────────────────────────────────────────────────────────
-
-function FaultLogPanel({ events }: { events: ChaosEvent[] }) {
-  const listRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (listRef.current) {
-      listRef.current.scrollTop = listRef.current.scrollHeight;
-    }
-  }, [events]);
-
-  return (
-    <div
-      ref={listRef}
-      className="space-y-2 overflow-y-auto"
-      style={{ maxHeight: 280 }}
-    >
-      <AnimatePresence initial={false}>
-        {(events ?? []).map((ev) => (
-          <motion.div
-            key={ev.id}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 20 }}
-            transition={{ duration: 0.3 }}
-            className="rounded-lg p-3 border"
-            style={{
-              background: SEVERITY_BG[ev.severity] ?? "rgba(255,255,255,0.03)",
-              borderColor: `${SEVERITY_COLORS[ev.severity] ?? "#71717a"}30`,
-            }}
-          >
-            <div className="flex items-start justify-between gap-2 mb-1">
-              <div className="flex items-center gap-2">
-                <span
-                  className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded"
-                  style={{
-                    color: SEVERITY_COLORS[ev.severity] ?? "#71717a",
-                    background: `${SEVERITY_COLORS[ev.severity] ?? "#71717a"}20`,
-                  }}
-                >
-                  {ev.severity.toUpperCase()}
-                </span>
-                <span className="text-[10px] font-mono font-semibold text-zinc-200">{ev.type}</span>
-              </div>
-              <span className="text-[9px] font-mono text-zinc-600 shrink-0">{ev.timestamp}</span>
-            </div>
-            <p className="text-[10px] font-mono text-zinc-400 leading-relaxed">{ev.description}</p>
-            <p className="text-[10px] font-mono mt-1" style={{ color: SEVERITY_COLORS[ev.severity] ?? "#71717a" }}>
-              Impact: {ev.impact}
-            </p>
-          </motion.div>
-        ))}
-      </AnimatePresence>
-      {events.length === 0 && (
-        <div className="text-center py-8 text-zinc-600 font-mono text-xs">
-          No chaos events recorded. System nominal.
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ─── Sparkline ────────────────────────────────────────────────────────────────
-
-function Sparkline({ data, color, width = 200, height = 48 }: { data: number[]; color: string; width?: number; height?: number }) {
-  if (!data || data.length < 2) return null;
-  const max = Math.max(...data, 1);
-  const min = Math.min(...data, 0);
-  const range = max - min || 1;
-  const pts = data.map((v, i) => {
-    const x = (i / (data.length - 1)) * width;
-    const y = height - ((v - min) / range) * (height - 4) - 2;
-    return `${x},${y}`;
-  });
-  const polyline = pts.join(" ");
-  const area = `0,${height} ${pts.join(" ")} ${width},${height}`;
-
-  return (
-    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="overflow-visible">
-      <defs>
-        <linearGradient id={`sg-${color.replace("#", "")}`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity={0.3} />
-          <stop offset="100%" stopColor={color} stopOpacity={0} />
-        </linearGradient>
-      </defs>
-      <polygon points={area} fill={`url(#sg-${color.replace("#", "")})`} />
-      <polyline points={polyline} fill="none" stroke={color} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ filter: `drop-shadow(0 0 3px ${color})` }} />
-    </svg>
-  );
-}
-
-// ─── Stat Card ────────────────────────────────────────────────────────────────
-
-function StatCard({
-  label,
-  value,
-  unit,
-  color,
-  icon,
-  trend,
-}: {
-  label: string;
-  value: string;
-  unit: string;
-  color: string;
-  icon: React.ReactNode;
-  trend?: "up" | "down" | "flat";
-}) {
   return (
     <motion.div
       variants={scaleIn}
-      whileHover={{ scale: 1.02, y: -2 }}
-      className="rounded-xl p-4 border"
-      style={{
-        background: "rgba(9,9,11,0.6)",
-        borderColor: `${color}20`,
-        boxShadow: `0 1px 2px rgba(0,0,0,0.2), 0 0 20px ${color}08`,
-      }}
+      className="flex items-center gap-2"
     >
-      <div className="flex items-center justify-between mb-3">
-        <span style={{ color }} className="opacity-80">{icon}</span>
-        {trend && (
-          <span className={`text-[10px] font-mono ${trend === "up" ? "text-emerald-400" : trend === "down" ? "text-red-400" : "text-zinc-500"}`}>
-            {trend === "up" ? "▲" : trend === "down" ? "▼" : "—"}
+      <div
+        className="relative flex flex-col items-center gap-1 px-3 py-3 rounded-lg border min-w-[120px] cursor-default"
+        style={{
+          borderColor: `${color}40`,
+          background: bg,
+          boxShadow: stage.status === "running" ? `0 0 16px ${color}30` : "none",
+        }}
+      >
+        {/* Pulsing ring for running */}
+        {stage.status === "running" && (
+          <motion.div
+            className="absolute inset-0 rounded-lg"
+            style={{ border: `1px solid ${color}` }}
+            animate={{ opacity: [0.4, 1, 0.4] }}
+            transition={{ duration: 1.2, repeat: Infinity }}
+          />
+        )}
+
+        <div style={{ color }}>{ICON_MAP[stage.icon]}</div>
+        <span className="text-[10px] font-mono text-center leading-tight" style={{ color }}>
+          {stage.label}
+        </span>
+        <span
+          className="text-[9px] font-mono uppercase tracking-widest"
+          style={{ color: `${color}99` }}
+        >
+          {stage.status}
+        </span>
+        {stage.duration !== null && (
+          <span className="text-[9px] font-mono" style={{ color: "#52525b" }}>
+            {stage.duration}s
+          </span>
+        )}
+        {stage.tests > 0 && (
+          <span className="text-[9px] font-mono" style={{ color: "#52525b" }}>
+            {stage.tests} tests
           </span>
         )}
       </div>
-      <div className="text-xl font-mono font-bold tabular-nums" style={{ color }}>
-        {value}
-        <span className="text-sm font-normal text-zinc-500 ml-1">{unit}</span>
+
+      {!isLast && (
+        <ChevronRight size={14} className="text-zinc-600 flex-shrink-0" />
+      )}
+    </motion.div>
+  );
+}
+
+function ChaosEventCard({ event }: { event: ChaosEvent }) {
+  const color = SEVERITY_COLORS[event.severity];
+  const bg = SEVERITY_BG[event.severity];
+
+  return (
+    <motion.div
+      variants={fadeInUp}
+      className="rounded-lg border p-3 space-y-1"
+      style={{ borderColor: `${color}30`, background: bg }}
+    >
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <div
+            className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+            style={{ backgroundColor: color, boxShadow: `0 0 6px ${color}` }}
+          />
+          <span className="text-[10px] font-mono uppercase tracking-widest" style={{ color }}>
+            {event.severity}
+          </span>
+          <span className="text-[10px] font-mono text-zinc-500">{event.type}</span>
+        </div>
+        <span className="text-[9px] font-mono text-zinc-600">{event.timestamp}</span>
       </div>
-      <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mt-1">{label}</div>
+      <p className="text-[11px] font-mono text-zinc-300 leading-relaxed">{event.description}</p>
+      <p className="text-[10px] font-mono text-zinc-500 leading-relaxed">
+        <span style={{ color: "#06b6d4" }}>impact: </span>
+        {event.impact}
+      </p>
+    </motion.div>
+  );
+}
+
+function GateRuleRow({
+  rule,
+}: {
+  rule: (typeof GATE_RULES)[number];
+}) {
+  const statusColor =
+    rule.status === "pass" ? "#10b981" : rule.status === "warn" ? "#f59e0b" : "#ef4444";
+  const statusBg =
+    rule.status === "pass"
+      ? "rgba(16,185,129,0.08)"
+      : rule.status === "warn"
+      ? "rgba(245,158,11,0.08)"
+      : "rgba(239,68,68,0.08)";
+
+  return (
+    <motion.div
+      variants={fadeInUp}
+      className="flex items-start justify-between gap-4 p-3 rounded-lg border"
+      style={{ borderColor: `${statusColor}25`, background: statusBg }}
+    >
+      <div className="flex-1 space-y-0.5">
+        <div className="flex items-center gap-2">
+          <div
+            className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+            style={{ backgroundColor: statusColor, boxShadow: `0 0 6px ${statusColor}` }}
+          />
+          <span className="text-xs font-mono font-semibold" style={{ color: statusColor }}>
+            {rule.label}
+          </span>
+        </div>
+        <p className="text-[10px] font-mono text-zinc-500 leading-relaxed pl-3.5">
+          {rule.description}
+        </p>
+      </div>
+      <div className="text-right flex-shrink-0">
+        <div className="text-sm font-mono font-bold tabular-nums" style={{ color: statusColor }}>
+          {rule.current}
+        </div>
+        <div
+          className="text-[9px] font-mono uppercase tracking-widest"
+          style={{ color: `${statusColor}80` }}
+        >
+          {rule.status}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// ─── Chaos Control Panel ──────────────────────────────────────────────────────
+
+function ChaosControlPanel({
+  sliders,
+  onSliderChange,
+  onInjectFault,
+  isFaultInjected,
+  systemHealth,
+  p99Latency,
+}: {
+  sliders: SliderConfig;
+  onSliderChange: (key: keyof SliderConfig, value: number) => void;
+  onInjectFault: (type: string) => void;
+  isFaultInjected: boolean;
+  systemHealth: number;
+  p99Latency: number;
+}) {
+  const sliderDefs: Array<{
+    key: keyof SliderConfig;
+    label: string;
+    unit: string;
+    max: number;
+    color: string;
+    icon: React.ReactNode;
+    group: string;
+  }> = [
+    {
+      key: "packetLoss",
+      label: "Packet Loss",
+      unit: "%",
+      max: 100,
+      color: "#f59e0b",
+      icon: <Wifi size={12} />,
+      group: "Network Throttling",
+    },
+    {
+      key: "jitterMs",
+      label: "Jitter",
+      unit: "ms",
+      max: 500,
+      color: "#f59e0b",
+      icon: <Radio size={12} />,
+      group: "Network Throttling",
+    },
+    {
+      key: "cpuStarvation",
+      label: "CPU Starvation",
+      unit: "%",
+      max: 100,
+      color: "#ef4444",
+      icon: <Cpu size={12} />,
+      group: "Server Stress",
+    },
+    {
+      key: "memoryStarvation",
+      label: "Memory Starvation",
+      unit: "%",
+      max: 100,
+      color: "#ef4444",
+      icon: <MemoryStick size={12} />,
+      group: "Server Stress",
+    },
+  ];
+
+  const networkSliders = sliderDefs.filter((s) => s.group === "Network Throttling");
+  const serverSliders = sliderDefs.filter((s) => s.group === "Server Stress");
+
+  const healthColor =
+    systemHealth > 80 ? "#10b981" : systemHealth > 50 ? "#f59e0b" : "#ef4444";
+
+  return (
+    <motion.div
+      variants={fadeInUp}
+      className="rounded-xl border p-5 space-y-5"
+      style={{
+        borderColor: isFaultInjected ? "rgba(239,68,68,0.4)" : "rgba(16,185,129,0.12)",
+        background: isFaultInjected
+          ? "rgba(239,68,68,0.04)"
+          : "rgba(9,9,11,0.6)",
+        backdropFilter: "blur(12px)",
+        transition: "border-color 0.4s, background 0.4s",
+      }}
+    >
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Zap size={14} style={{ color: isFaultInjected ? "#ef4444" : "#f59e0b" }} />
+          <span className="text-xs font-mono font-semibold text-zinc-300 uppercase tracking-widest">
+            Chaos Control Panel
+          </span>
+          {isFaultInjected && (
+            <motion.span
+              animate={{ opacity: [1, 0.3, 1] }}
+              transition={{ duration: 0.6, repeat: Infinity }}
+              className="text-[9px] font-mono px-1.5 py-0.5 rounded"
+              style={{ background: "rgba(239,68,68,0.2)", color: "#ef4444" }}
+            >
+              FAULT ACTIVE
+            </motion.span>
+          )}
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="text-right">
+            <div className="text-[10px] font-mono text-zinc-600">SYS HEALTH</div>
+            <div className="text-sm font-mono font-bold tabular-nums" style={{ color: healthColor }}>
+              {systemHealth.toFixed(1)}%
+            </div>
+          </div>
+          <div className="text-right">
+            <div className="text-[10px] font-mono text-zinc-600">P99</div>
+            <div className="text-sm font-mono font-bold tabular-nums" style={{ color: "#06b6d4" }}>
+              {p99Latency}ms
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Network Throttling */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <Wifi size={11} className="text-amber-400" />
+          <span className="text-[10px] font-mono text-amber-400 uppercase tracking-widest">
+            Network Throttling
+          </span>
+        </div>
+        {networkSliders.map((s) => (
+          <div key={s.key} className="space-y-1">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-1.5" style={{ color: s.color }}>
+                {s.icon}
+                <span className="text-[10px] font-mono">{s.label}</span>
+              </div>
+              <span className="text-[10px] font-mono tabular-nums" style={{ color: s.color }}>
+                {sliders[s.key]}
+                {s.unit}
+              </span>
+            </div>
+            <input
+              type="range"
+              min={0}
+              max={s.max}
+              value={sliders[s.key]}
+              onChange={(e) => onSliderChange(s.key, Number(e.target.value))}
+              className="w-full h-1 rounded-full appearance-none cursor-pointer"
+              style={{
+                background: `linear-gradient(to right, ${s.color} ${(sliders[s.key] / s.max) * 100}%, #27272a ${(sliders[s.key] / s.max) * 100}%)`,
+                accentColor: s.color,
+              }}
+            />
+          </div>
+        ))}
+      </div>
+
+      {/* Server Stress */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <Cpu size={11} className="text-red-400" />
+          <span className="text-[10px] font-mono text-red-400 uppercase tracking-widest">
+            Server Stress
+          </span>
+        </div>
+        {serverSliders.map((s) => (
+          <div key={s.key} className="space-y-1">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-1.5" style={{ color: s.color }}>
+                {s.icon}
+                <span className="text-[10px] font-mono">{s.label}</span>
+              </div>
+              <span className="text-[10px] font-mono tabular-nums" style={{ color: s.color }}>
+                {sliders[s.key]}
+                {s.unit}
+              </span>
+            </div>
+            <input
+              type="range"
+              min={0}
+              max={s.max}
+              value={sliders[s.key]}
+              onChange={(e) => onSliderChange(s.key, Number(e.target.value))}
+              className="w-full h-1 rounded-full appearance-none cursor-pointer"
+              style={{
+                background: `linear-gradient(to right, ${s.color} ${(sliders[s.key] / s.max) * 100}%, #27272a ${(sliders[s.key] / s.max) * 100}%)`,
+                accentColor: s.color,
+              }}
+            />
+          </div>
+        ))}
+      </div>
+
+      {/* Fault injection buttons */}
+      <div className="grid grid-cols-2 gap-2 pt-1">
+        {[
+          { label: "Inject Network Fault", type: "network", color: "#f59e0b" },
+          { label: "Inject API 500 Error", type: "api-fault", color: "#ef4444" },
+          { label: "Simulate Session Timeout", type: "session-timeout", color: "#06b6d4" },
+          { label: "Stress File Upload", type: "stress-test", color: "#ef4444" },
+        ].map((btn) => (
+          <button
+            key={btn.type}
+            onClick={() => onInjectFault(btn.type)}
+            className="px-3 py-2 rounded-lg border text-[10px] font-mono uppercase tracking-widest transition-all duration-200 hover:opacity-80 active:scale-95"
+            style={{
+              borderColor: `${btn.color}40`,
+              background: `${btn.color}10`,
+              color: btn.color,
+            }}
+          >
+            {btn.label}
+          </button>
+        ))}
+      </div>
     </motion.div>
   );
 }
@@ -503,714 +628,413 @@ function StatCard({
 
 export default function PipelinePage() {
   const t = useTranslations();
-  const store = useMetricsStore();
+  const metrics = useMetricsStore();
 
   const [stages, setStages] = useState<PipelineStage[]>(INITIAL_STAGES);
+  const [chaosEvents, setChaosEvents] = useState<ChaosEvent[]>(INITIAL_CHAOS_EVENTS);
   const [sliders, setSliders] = useState<SliderConfig>({
     packetLoss: 0,
     jitterMs: 0,
     cpuStarvation: 0,
     memoryStarvation: 0,
   });
-  const [chaosEvents, setChaosEvents] = useState<ChaosEvent[]>([]);
-  const [isRunningPipeline, setIsRunningPipeline] = useState(false);
-  const [eventCounter, setEventCounter] = useState(0);
-  const [mounted, setMounted] = useState(false);
-  const [latencyHistory, setLatencyHistory] = useState<number[]>([142, 138, 145, 151, 139, 144, 148, 142, 155, 141]);
-  const [healthHistory, setHealthHistory] = useState<number[]>([97, 96, 98, 95, 97, 94, 98, 97, 96, 95]);
+  const [isRunning, setIsRunning] = useState(false);
+  const [runProgress, setRunProgress] = useState(0);
+  const runRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [tick, setTick] = useState(0);
 
+  // Tick for live updates
   useEffect(() => {
-    setMounted(true);
+    const id = setInterval(() => setTick((t) => t + 1), 1000);
+    return () => clearInterval(id);
   }, []);
 
-  // Simulate pipeline progression
-  useEffect(() => {
-    if (!mounted) return;
-    const interval = setInterval(() => {
-      setStages((prev) => {
-        const runningIdx = prev.findIndex((s) => s.status === "running");
-        if (runningIdx === -1) return prev;
-        const next = [...prev];
-        const shouldFail = store.isFaultInjected && runningIdx >= 3;
-        next[runningIdx] = {
-          ...next[runningIdx],
-          status: shouldFail ? "failed" : "passed",
-          duration: 15 + runningIdx * 8 + (shouldFail ? 0 : 2),
-        };
-        if (runningIdx + 1 < next.length && !shouldFail) {
-          next[runningIdx + 1] = { ...next[runningIdx + 1], status: "running" };
-        }
-        return next;
-      });
-    }, 3500);
-    return () => clearInterval(interval);
-  }, [mounted, store.isFaultInjected]);
-
-  // Update sparkline histories
-  useEffect(() => {
-    if (!mounted) return;
-    const interval = setInterval(() => {
-      setLatencyHistory((prev) => {
-        const next = [...prev.slice(-19), store.p99Latency + (Math.random() - 0.5) * 20];
-        return next;
-      });
-      setHealthHistory((prev) => {
-        const next = [...prev.slice(-19), store.systemHealth + (Math.random() - 0.5) * 2];
-        return next;
-      });
-    }, 1200);
-    return () => clearInterval(interval);
-  }, [mounted, store.p99Latency, store.systemHealth]);
-
-  const addChaosEvent = useCallback((type: string, severity: ChaosEvent["severity"], description: string, impact: string) => {
-    const now = new Date();
-    const ts = formatTs(now);
-    setChaosEvents((prev) => [
-      ...prev.slice(-19),
-      {
-        id: `ev-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
-        timestamp: ts,
-        type,
-        severity,
-        description,
-        impact,
-      },
-    ]);
-    setEventCounter((c) => c + 1);
-  }, []);
-
+  // Slider change handler
   const handleSliderChange = useCallback(
     (key: keyof SliderConfig, value: number) => {
       setSliders((prev) => ({ ...prev, [key]: value }));
-      const totalIntensity =
-        (key === "packetLoss" ? value : sliders.packetLoss) +
-        (key === "jitterMs" ? value : sliders.jitterMs) / 5 +
-        (key === "cpuStarvation" ? value : sliders.cpuStarvation) +
-        (key === "memoryStarvation" ? value : sliders.memoryStarvation);
-      if (totalIntensity > 30) {
-        store.triggerChaosEvent(totalIntensity);
+      const intensity = value / 10;
+      if (intensity > 0) {
+        metrics.triggerChaosEvent(intensity);
       }
     },
-    [sliders, store]
+    [metrics]
   );
 
+  // Inject fault handler
   const handleInjectFault = useCallback(
-    (templateIdx: number) => {
-      const tpl = CHAOS_TEMPLATES[templateIdx % CHAOS_TEMPLATES.length];
-      if (!tpl) return;
-      store.injectFault(tpl.type);
-      const severities: ChaosEvent["severity"][] = ["low", "medium", "high", "critical"];
-      const sev = severities[Math.min(templateIdx, 3)] ?? "medium";
-      addChaosEvent(tpl.type, sev, tpl.description, tpl.impact);
-      setStages((prev) =>
-        prev.map((s) =>
-          s.status === "running" || s.status === "idle"
-            ? { ...s, status: s.status === "running" ? "failed" : "idle" }
-            : s
-        )
-      );
+    (type: string) => {
+      metrics.injectFault(type);
+      const newEvent: ChaosEvent = {
+        id: `ce-${Date.now()}`,
+        timestamp: formatTs(new Date()),
+        type,
+        severity: "critical",
+        description: {
+          network: "Network throttle applied — simulating 3G mobile connection for mobile viewport tests",
+          "api-fault": "API endpoint /api/datasets returned 500 — fault injected for error handling validation",
+          "session-timeout": "Session timeout simulated — verifying OTP re-authentication flow",
+          "stress-test": "Large file upload (2GB) stress test initiated — monitoring memory and timeout behavior",
+        }[type] ?? `Fault injected: ${type}`,
+        impact: "System degradation detected — monitoring recovery metrics",
+      };
+      setChaosEvents((prev) => [newEvent, ...prev.slice(0, 7)]);
     },
-    [store, addChaosEvent]
+    [metrics]
   );
 
-  const handleResetPipeline = useCallback(() => {
-    setStages(INITIAL_STAGES.map((s, i) => ({
-      ...s,
-      status: i < 2 ? "passed" : i === 2 ? "running" : "idle",
-      duration: i < 2 ? s.duration : null,
-    })));
-    setSliders({ packetLoss: 0, jitterMs: 0, cpuStarvation: 0, memoryStarvation: 0 });
-    setIsRunningPipeline(false);
-  }, []);
+  // Pipeline run simulation
+  const handleRunPipeline = useCallback(() => {
+    if (isRunning) return;
+    setIsRunning(true);
+    setRunProgress(0);
+    setStages(INITIAL_STAGES.map((s) => ({ ...s, status: "idle" as StageStatus })));
 
-  const healthColor =
-    store.systemHealth > 80 ? "#10b981" : store.systemHealth > 50 ? "#f59e0b" : "#ef4444";
+    const stageIds = INITIAL_STAGES.map((s) => s.id);
+    let currentIdx = 0;
+
+    const runNext = () => {
+      if (currentIdx >= stageIds.length) {
+        setIsRunning(false);
+        setRunProgress(100);
+        return;
+      }
+
+      const id = stageIds[currentIdx];
+      setStages((prev) =>
+        prev.map((s) => (s.id === id ? { ...s, status: "running" } : s))
+      );
+      setRunProgress(Math.round((currentIdx / stageIds.length) * 100));
+
+      const duration = 1200 + Math.random() * 1800;
+      runRef.current = setTimeout(() => {
+        const passed = Math.random() > 0.12;
+        setStages((prev) =>
+          prev.map((s) =>
+            s.id === id
+              ? {
+                  ...s,
+                  status: passed ? "passed" : "failed",
+                  duration: parseFloat((duration / 1000).toFixed(1)),
+                  tests: s.tests || Math.floor(Math.random() * 200 + 50),
+                }
+              : s
+          )
+        );
+        currentIdx++;
+        runNext();
+      }, duration);
+    };
+
+    runNext();
+  }, [isRunning]);
+
+  useEffect(() => {
+    return () => {
+      if (runRef.current) clearTimeout(runRef.current);
+    };
+  }, []);
 
   const passedStages = stages.filter((s) => s.status === "passed").length;
   const failedStages = stages.filter((s) => s.status === "failed").length;
-  const totalIntensity = sliders.packetLoss + sliders.jitterMs / 5 + sliders.cpuStarvation + sliders.memoryStarvation;
+  const totalIntensity =
+    (sliders.packetLoss / 100 +
+      sliders.jitterMs / 500 +
+      sliders.cpuStarvation / 100 +
+      sliders.memoryStarvation / 100) *
+    25;
 
   return (
-    <div className="relative min-h-screen" style={{ background: "transparent" }}>
-      {/* Fault injection red flicker overlay */}
-      <AnimatePresence>
-        {store.isFaultInjected && (
-          <motion.div
-            className="fixed inset-0 pointer-events-none z-50"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: [0, 0.08, 0, 0.12, 0, 0.06, 0] }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1.5, times: [0, 0.1, 0.2, 0.35, 0.5, 0.7, 1] }}
-            style={{ background: "radial-gradient(ellipse at center, rgba(239,68,68,0.3), rgba(239,68,68,0.05))" }}
+    <div className="min-h-screen px-4 md:px-8 py-8 space-y-8">
+      {/* Page header */}
+      <motion.div
+        variants={staggerContainer}
+        initial="hidden"
+        animate="visible"
+        className="space-y-2"
+      >
+        <motion.div variants={fadeInUp} className="flex items-center gap-2">
+          <div
+            className="w-1.5 h-1.5 rounded-full"
+            style={{ backgroundColor: "#f59e0b", boxShadow: "0 0 8px #f59e0b" }}
           />
-        )}
-      </AnimatePresence>
-
-      <div className="relative z-10 px-4 md:px-8 py-8 max-w-7xl mx-auto space-y-8">
-
-        {/* ── Header ── */}
-        <motion.div
-          variants={fadeInUp}
-          initial="hidden"
-          animate="visible"
-          className="flex flex-col md:flex-row md:items-end justify-between gap-4"
-        >
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <motion.div
-                className="w-2 h-2 rounded-full"
-                animate={{ opacity: [1, 0.3, 1] }}
-                transition={{ repeat: Infinity, duration: 1.2 }}
-                style={{ background: store.isFaultInjected ? "#ef4444" : "#10b981", boxShadow: `0 0 8px ${store.isFaultInjected ? "#ef4444" : "#10b981"}` }}
-              />
-              <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">
-                {store.isFaultInjected ? "FAULT ACTIVE" : "PIPELINE NOMINAL"}
-              </span>
-            </div>
-            <h1 className="text-3xl md:text-4xl font-mono font-bold text-zinc-100 tracking-tight">
-              Chaos Engineering
-              <span className="text-emerald-400"> & Pipeline Gate</span>
-            </h1>
-            <p className="text-sm font-mono text-zinc-500 mt-2 max-w-xl">
-              Real-time CI/CD pipeline orchestration with fault injection, chaos controls, and automated quality gates. Every commit must survive the gauntlet.
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            <motion.button
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={handleResetPipeline}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-mono border transition-all duration-200"
-              style={{
-                background: "rgba(6,182,212,0.08)",
-                borderColor: "rgba(6,182,212,0.3)",
-                color: "#06b6d4",
-              }}
-            >
-              <RefreshCw size={12} />
-              Reset Pipeline
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={() => handleInjectFault(chaosEvents.length % CHAOS_TEMPLATES.length)}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-mono border transition-all duration-200"
-              style={{
-                background: store.isFaultInjected ? "rgba(239,68,68,0.15)" : "rgba(239,68,68,0.08)",
-                borderColor: "rgba(239,68,68,0.4)",
-                color: "#ef4444",
-                boxShadow: store.isFaultInjected ? "0 0 16px rgba(239,68,68,0.3)" : "none",
-              }}
-            >
-              <Zap size={12} />
-              Inject Fault
-            </motion.button>
-          </div>
+          <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">
+            {brand.shortName} // chaos-engineering-pipeline-gate
+          </span>
         </motion.div>
+        <motion.h1
+          variants={fadeInUp}
+          className="text-2xl md:text-3xl font-mono font-bold text-zinc-100"
+        >
+          Chaos &amp; Pipeline Gate
+        </motion.h1>
+        <motion.p variants={fadeInUp} className="text-sm font-mono text-zinc-500 max-w-2xl">
+          Multi-stage quality gate enforcement with real-time chaos injection. Validates Rao's QA
+          workflow across Lint, Functional, Regression, API, E2E Playwright, and Security stages.
+        </motion.p>
+      </motion.div>
 
-        {/* ── Stat Cards ── */}
+      {/* Top stats bar */}
+      <motion.div
+        variants={staggerContainer}
+        initial="hidden"
+        animate="visible"
+        className="grid grid-cols-2 md:grid-cols-4 gap-3"
+      >
+        {[
+          {
+            label: "Stages Passed",
+            value: `${passedStages}/${stages.length}`,
+            color: "#10b981",
+          },
+          {
+            label: "Stages Failed",
+            value: String(failedStages),
+            color: failedStages > 0 ? "#ef4444" : "#10b981",
+          },
+          {
+            label: "System Health",
+            value: `${metrics.systemHealth.toFixed(1)}%`,
+            color:
+              metrics.systemHealth > 80
+                ? "#10b981"
+                : metrics.systemHealth > 50
+                ? "#f59e0b"
+                : "#ef4444",
+          },
+          {
+            label: "P99 Latency",
+            value: `${metrics.p99Latency}ms`,
+            color: metrics.p99Latency > 500 ? "#ef4444" : "#06b6d4",
+          },
+        ].map((stat) => (
+          <motion.div
+            key={stat.label}
+            variants={scaleIn}
+            className="rounded-lg border p-3 text-center"
+            style={{
+              borderColor: `${stat.color}25`,
+              background: `${stat.color}08`,
+            }}
+          >
+            <div
+              className="text-xl font-mono font-bold tabular-nums"
+              style={{ color: stat.color }}
+            >
+              {stat.value}
+            </div>
+            <div className="text-[9px] font-mono text-zinc-600 uppercase tracking-widest mt-0.5">
+              {stat.label}
+            </div>
+          </motion.div>
+        ))}
+      </motion.div>
+
+      {/* Pipeline conveyor */}
+      <motion.div
+        variants={fadeInUp}
+        initial="hidden"
+        animate="visible"
+        className="rounded-xl border p-5 space-y-4"
+        style={{
+          borderColor: "rgba(16,185,129,0.12)",
+          background: "rgba(9,9,11,0.6)",
+          backdropFilter: "blur(12px)",
+        }}
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <GitBranch size={14} className="text-emerald-400" />
+            <span className="text-xs font-mono font-semibold text-zinc-300 uppercase tracking-widest">
+              Pipeline Conveyor
+            </span>
+            {isRunning && (
+              <motion.span
+                animate={{ opacity: [1, 0.3, 1] }}
+                transition={{ duration: 0.8, repeat: Infinity }}
+                className="text-[9px] font-mono px-1.5 py-0.5 rounded"
+                style={{ background: "rgba(245,158,11,0.2)", color: "#f59e0b" }}
+              >
+                RUNNING
+              </motion.span>
+            )}
+          </div>
+          <button
+            onClick={handleRunPipeline}
+            disabled={isRunning}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[10px] font-mono uppercase tracking-widest transition-all duration-200 hover:opacity-80 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+            style={{
+              borderColor: "rgba(16,185,129,0.3)",
+              background: "rgba(16,185,129,0.08)",
+              color: "#10b981",
+            }}
+          >
+            <RefreshCw size={11} className={isRunning ? "animate-spin" : ""} />
+            {isRunning ? "Running…" : "Run Pipeline"}
+          </button>
+        </div>
+
+        {/* Progress bar */}
+        {isRunning && (
+          <div className="w-full h-0.5 rounded-full bg-zinc-800 overflow-hidden">
+            <motion.div
+              className="h-full rounded-full"
+              style={{ background: "#10b981" }}
+              animate={{ width: `${runProgress}%` }}
+              transition={{ duration: 0.4 }}
+            />
+          </div>
+        )}
+
+        {/* Stage nodes */}
         <motion.div
           variants={staggerContainer}
           initial="hidden"
           animate="visible"
-          className="grid grid-cols-2 md:grid-cols-4 gap-4"
+          className="flex flex-wrap gap-2 items-center"
         >
-          <StatCard
-            label="System Health"
-            value={mounted ? store.systemHealth.toFixed(1) : "94.7"}
-            unit="%"
-            color={healthColor}
-            icon={<Shield size={16} />}
-            trend={store.isFaultInjected ? "down" : "up"}
-          />
-          <StatCard
-            label="P99 Latency"
-            value={mounted ? store.p99Latency.toFixed(0) : "142"}
-            unit="ms"
-            color={store.p99Latency > 500 ? "#ef4444" : store.p99Latency > 300 ? "#f59e0b" : "#10b981"}
-            icon={<Activity size={16} />}
-            trend={store.isFaultInjected ? "up" : "flat"}
-          />
-          <StatCard
-            label="Stages Passed"
-            value={passedStages.toString()}
-            unit={`/ ${stages.length}`}
-            color="#10b981"
-            icon={<Check size={16} />}
-            trend="up"
-          />
-          <StatCard
-            label="Chaos Events"
-            value={eventCounter.toString()}
-            unit="total"
-            color={eventCounter > 5 ? "#ef4444" : "#f59e0b"}
-            icon={<AlertTriangle size={16} />}
-            trend={eventCounter > 0 ? "up" : "flat"}
-          />
+          {stages.map((stage, i) => (
+            <StageNode
+              key={stage.id}
+              stage={stage}
+              index={i}
+              isLast={i === stages.length - 1}
+            />
+          ))}
         </motion.div>
+      </motion.div>
 
-        {/* ── Conveyor Pipeline ── */}
+      {/* Main two-column layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Left: Chaos Control Panel */}
+        <ChaosControlPanel
+          sliders={sliders}
+          onSliderChange={handleSliderChange}
+          onInjectFault={handleInjectFault}
+          isFaultInjected={metrics.isFaultInjected}
+          systemHealth={metrics.systemHealth}
+          p99Latency={metrics.p99Latency}
+        />
+
+        {/* Right: Chaos Event Log */}
         <motion.div
           variants={fadeInUp}
           initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-60px" }}
-          className="rounded-2xl border p-6"
+          animate="visible"
+          className="rounded-xl border p-5 space-y-4"
           style={{
-            background: "rgba(9,9,11,0.7)",
             borderColor: "rgba(16,185,129,0.12)",
-            boxShadow: "0 1px 2px rgba(0,0,0,0.3), 0 8px 32px -8px rgba(0,0,0,0.4)",
+            background: "rgba(9,9,11,0.6)",
+            backdropFilter: "blur(12px)",
           }}
         >
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <div className="w-1 h-6 rounded-full bg-emerald-400" style={{ boxShadow: "0 0 8px #10b981" }} />
-              <h2 className="text-sm font-mono font-bold text-zinc-200 uppercase tracking-widest">
-                CI/CD Pipeline — Conveyor View
-              </h2>
-            </div>
-            <div className="flex items-center gap-2">
-              {failedStages > 0 && (
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-red-500/10 text-red-400 border border-red-500/20">
-                  {failedStages} FAILED
-                </span>
-              )}
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                {passedStages} PASSED
-              </span>
-            </div>
-          </div>
-          <ConveyorPipeline stages={stages} isFaultInjected={store.isFaultInjected} />
-
-          {/* Stage detail table */}
-          <div className="mt-6 overflow-x-auto">
-            <table className="w-full text-[11px] font-mono">
-              <thead>
-                <tr className="border-b border-zinc-800">
-                  <th className="text-left text-zinc-600 uppercase tracking-widest pb-2 pr-4">Stage</th>
-                  <th className="text-left text-zinc-600 uppercase tracking-widest pb-2 pr-4">Status</th>
-                  <th className="text-right text-zinc-600 uppercase tracking-widest pb-2 pr-4">Duration</th>
-                  <th className="text-right text-zinc-600 uppercase tracking-widest pb-2">Tests</th>
-                </tr>
-              </thead>
-              <tbody>
-                {stages.map((stage) => {
-                  const statusColors: Record<StageStatus, string> = {
-                    passed: "#10b981",
-                    failed: "#ef4444",
-                    running: "#06b6d4",
-                    idle: "#3f3f46",
-                    skipped: "#71717a",
-                  };
-                  return (
-                    <tr key={stage.id} className="border-b border-zinc-900 hover:bg-white/[0.02] transition-colors">
-                      <td className="py-2 pr-4 text-zinc-300">{stage.label}</td>
-                      <td className="py-2 pr-4">
-                        <span style={{ color: statusColors[stage.status] }}>{stage.status.toUpperCase()}</span>
-                      </td>
-                      <td className="py-2 pr-4 text-right text-zinc-500">
-                        {stage.duration !== null ? `${stage.duration.toFixed(1)}s` : "—"}
-                      </td>
-                      <td className="py-2 text-right text-zinc-500">
-                        {stage.tests > 0 ? stage.tests.toLocaleString("en-US") : "—"}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </motion.div>
-
-        {/* ── Chaos Control + Health Gauge ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-          {/* Chaos Control Panel */}
-          <motion.div
-            variants={fadeInUp}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-60px" }}
-            className="lg:col-span-2 rounded-2xl border p-6 space-y-6"
-            style={{
-              background: "rgba(9,9,11,0.7)",
-              borderColor: store.isFaultInjected ? "rgba(239,68,68,0.25)" : "rgba(245,158,11,0.12)",
-              boxShadow: store.isFaultInjected
-                ? "0 0 32px rgba(239,68,68,0.12), 0 1px 2px rgba(0,0,0,0.3)"
-                : "0 1px 2px rgba(0,0,0,0.3), 0 8px 32px -8px rgba(0,0,0,0.4)",
-              transition: "border-color 0.4s, box-shadow 0.4s",
-            }}
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div
-                  className="w-1 h-6 rounded-full"
-                  style={{
-                    background: store.isFaultInjected ? "#ef4444" : "#f59e0b",
-                    boxShadow: `0 0 8px ${store.isFaultInjected ? "#ef4444" : "#f59e0b"}`,
-                  }}
-                />
-                <h2 className="text-sm font-mono font-bold text-zinc-200 uppercase tracking-widest">
-                  Chaos Control Panel
-                </h2>
-              </div>
-              {store.isFaultInjected && (
-                <motion.span
-                  animate={{ opacity: [1, 0.4, 1] }}
-                  transition={{ repeat: Infinity, duration: 0.8 }}
-                  className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-red-500/15 text-red-400 border border-red-500/30"
-                >
-                  FAULT ACTIVE
-                </motion.span>
-              )}
-            </div>
-
-            {/* Network section */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 mb-3">
-                <Wifi size={12} className="text-cyan-400" />
-                <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Network Throttling</span>
-              </div>
-              <ChaosSlider
-                label="Packet Loss"
-                value={sliders.packetLoss}
-                min={0}
-                max={50}
-                unit="%"
-                color="#06b6d4"
-                icon={<Radio size={12} />}
-                onChange={(v) => handleSliderChange("packetLoss", v)}
-              />
-              <ChaosSlider
-                label="Jitter"
-                value={sliders.jitterMs}
-                min={0}
-                max={500}
-                unit="ms"
-                color="#06b6d4"
-                icon={<Activity size={12} />}
-                onChange={(v) => handleSliderChange("jitterMs", v)}
-              />
-            </div>
-
-            <div className="border-t border-zinc-800/60" />
-
-            {/* Server stress section */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 mb-3">
-                <Cpu size={12} className="text-amber-400" />
-                <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Server Stress</span>
-              </div>
-              <ChaosSlider
-                label="CPU Starvation"
-                value={sliders.cpuStarvation}
-                min={0}
-                max={100}
-                unit="%"
-                color="#f59e0b"
-                icon={<Cpu size={12} />}
-                onChange={(v) => handleSliderChange("cpuStarvation", v)}
-              />
-              <ChaosSlider
-                label="Memory Starvation"
-                value={sliders.memoryStarvation}
-                min={0}
-                max={100}
-                unit="%"
-                color="#f97316"
-                icon={<MemoryStick size={12} />}
-                onChange={(v) => handleSliderChange("memoryStarvation", v)}
-              />
-            </div>
-
-            {/* Total intensity indicator */}
-            <div
-              className="rounded-xl p-4 border"
-              style={{
-                background: totalIntensity > 60 ? "rgba(239,68,68,0.06)" : totalIntensity > 30 ? "rgba(245,158,11,0.06)" : "rgba(16,185,129,0.04)",
-                borderColor: totalIntensity > 60 ? "rgba(239,68,68,0.2)" : totalIntensity > 30 ? "rgba(245,158,11,0.2)" : "rgba(16,185,129,0.15)",
-              }}
+          <div className="flex items-center gap-2">
+            <AlertTriangle size={14} className="text-amber-400" />
+            <span className="text-xs font-mono font-semibold text-zinc-300 uppercase tracking-widest">
+              Chaos Event Log
+            </span>
+            <span className="text-[9px] font-mono px-1.5 py-0.5 rounded ml-auto"
+              style={{ background: "rgba(245,158,11,0.15)", color: "#f59e0b" }}
             >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Aggregate Chaos Intensity</span>
-                <span
-                  className="text-sm font-mono font-bold tabular-nums"
-                  style={{ color: totalIntensity > 60 ? "#ef4444" : totalIntensity > 30 ? "#f59e0b" : "#10b981" }}
-                >
-                  {totalIntensity.toFixed(0)}
-                </span>
-              </div>
-              <div className="h-2 rounded-full" style={{ background: "rgba(255,255,255,0.06)" }}>
-                <motion.div
-                  className="h-full rounded-full"
-                  animate={{ width: `${Math.min(100, totalIntensity)}%` }}
-                  transition={{ duration: 0.4 }}
-                  style={{
-                    background: totalIntensity > 60
-                      ? "linear-gradient(90deg, #f59e0b, #ef4444)"
-                      : totalIntensity > 30
-                      ? "linear-gradient(90deg, #10b981, #f59e0b)"
-                      : "linear-gradient(90deg, #10b981, #06b6d4)",
-                    boxShadow: `0 0 8px ${totalIntensity > 60 ? "#ef4444" : totalIntensity > 30 ? "#f59e0b" : "#10b981"}60`,
-                  }}
-                />
-              </div>
-              <p className="text-[10px] font-mono text-zinc-600 mt-2">
-                {totalIntensity > 60
-                  ? "Critical: Pipeline gate will block deployment. Fault injection imminent."
-                  : totalIntensity > 30
-                  ? "Warning: Elevated chaos may cause test flakiness and latency spikes."
-                  : "Nominal: System operating within acceptable chaos parameters."}
-              </p>
-            </div>
+              {chaosEvents.length} events
+            </span>
+          </div>
 
-            {/* Quick inject buttons */}
-            <div>
-              <div className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest mb-3">Quick Fault Injection</div>
-              <div className="flex flex-wrap gap-2">
-                {CHAOS_TEMPLATES.map((tpl, i) => (
-                  <motion.button
-                    key={tpl.type}
-                    whileHover={{ scale: 1.04 }}
-                    whileTap={{ scale: 0.96 }}
-                    onClick={() => handleInjectFault(i)}
-                    className="text-[10px] font-mono px-3 py-1.5 rounded-lg border transition-all duration-200"
-                    style={{
-                      background: "rgba(239,68,68,0.06)",
-                      borderColor: "rgba(239,68,68,0.2)",
-                      color: "#ef4444",
-                    }}
-                  >
-                    {tpl.type.replace(/_/g, " ")}
-                  </motion.button>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Health Gauge + Sparklines */}
           <motion.div
-            variants={fadeInUp}
+            variants={staggerContainer}
             initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-60px" }}
-            className="rounded-2xl border p-6 flex flex-col gap-6"
-            style={{
-              background: "rgba(9,9,11,0.7)",
-              borderColor: "rgba(16,185,129,0.12)",
-              boxShadow: "0 1px 2px rgba(0,0,0,0.3), 0 8px 32px -8px rgba(0,0,0,0.4)",
-            }}
+            animate="visible"
+            className="space-y-2 max-h-80 overflow-y-auto pr-1"
+            style={{ scrollbarWidth: "thin", scrollbarColor: "#27272a transparent" }}
           >
-            <div className="flex items-center gap-3">
-              <div className="w-1 h-6 rounded-full bg-emerald-400" style={{ boxShadow: "0 0 8px #10b981" }} />
-              <h2 className="text-sm font-mono font-bold text-zinc-200 uppercase tracking-widest">
-                Pipeline Health
-              </h2>
-            </div>
-
-            <div className="flex justify-center">
-              <RingGauge
-                value={mounted ? store.systemHealth : 94.7}
-                label="System Health"
-                color={healthColor}
-                size={160}
-              />
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">P99 Latency Trend</span>
-                  <span className="text-[10px] font-mono tabular-nums" style={{ color: store.p99Latency > 300 ? "#ef4444" : "#10b981" }}>
-                    {mounted ? store.p99Latency.toFixed(0) : "142"}ms
-                  </span>
-                </div>
-                <Sparkline data={latencyHistory} color={store.p99Latency > 300 ? "#ef4444" : "#06b6d4"} width={220} height={40} />
-              </div>
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Health Trend</span>
-                  <span className="text-[10px] font-mono tabular-nums text-emerald-400">
-                    {mounted ? store.systemHealth.toFixed(1) : "94.7"}%
-                  </span>
-                </div>
-                <Sparkline data={healthHistory} color={healthColor} width={220} height={40} />
-              </div>
-            </div>
-
-            {/* Pass/fail ratio */}
-            <div className="rounded-xl p-3 border border-zinc-800/60" style={{ background: "rgba(255,255,255,0.02)" }}>
-              <div className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest mb-2">Test Outcome Ratio</div>
-              <div className="flex items-center gap-2 mb-1">
-                <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.05)" }}>
-                  <motion.div
-                    className="h-full rounded-full"
-                    animate={{
-                      width: `${mounted ? (store.passedCount / (store.passedCount + store.failedCount)) * 100 : 99.6}%`,
-                    }}
-                    transition={{ duration: 0.8 }}
-                    style={{ background: "linear-gradient(90deg, #10b981, #06b6d4)" }}
-                  />
-                </div>
-              </div>
-              <div className="flex justify-between text-[9px] font-mono">
-                <span className="text-emerald-400">{mounted ? store.passedCount.toLocaleString("en-US") : "8,421"} passed</span>
-                <span className="text-red-400">{mounted ? store.failedCount.toLocaleString("en-US") : "37"} failed</span>
-              </div>
-            </div>
+            <AnimatePresence mode="popLayout">
+              {chaosEvents.map((event) => (
+                <ChaosEventCard key={event.id} event={event} />
+              ))}
+            </AnimatePresence>
           </motion.div>
+        </motion.div>
+      </div>
+
+      {/* Gate Rules */}
+      <motion.div
+        variants={fadeInUp}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-40px" }}
+        className="rounded-xl border p-5 space-y-4"
+        style={{
+          borderColor: "rgba(16,185,129,0.12)",
+          background: "rgba(9,9,11,0.6)",
+          backdropFilter: "blur(12px)",
+        }}
+      >
+        <div className="flex items-center gap-2">
+          <Shield size={14} className="text-emerald-400" />
+          <span className="text-xs font-mono font-semibold text-zinc-300 uppercase tracking-widest">
+            Quality Gate Rules
+          </span>
+          <span
+            className="text-[9px] font-mono px-1.5 py-0.5 rounded ml-auto"
+            style={{ background: "rgba(16,185,129,0.15)", color: "#10b981" }}
+          >
+            {GATE_RULES.filter((r) => r.status === "pass").length}/{GATE_RULES.length} PASSING
+          </span>
         </div>
 
-        {/* ── Fault Injection Log ── */}
         <motion.div
-          variants={fadeInUp}
+          variants={staggerContainer}
           initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-60px" }}
-          className="rounded-2xl border p-6"
+          animate="visible"
+          className="space-y-2"
+        >
+          {GATE_RULES.map((rule) => (
+            <GateRuleRow key={rule.id} rule={rule} />
+          ))}
+        </motion.div>
+      </motion.div>
+
+      {/* Chaos intensity indicator */}
+      {totalIntensity > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 16 }}
+          className="rounded-xl border p-4"
           style={{
-            background: "rgba(9,9,11,0.7)",
-            borderColor: "rgba(239,68,68,0.1)",
-            boxShadow: "0 1px 2px rgba(0,0,0,0.3), 0 8px 32px -8px rgba(0,0,0,0.4)",
+            borderColor: `rgba(239,68,68,${Math.min(0.6, totalIntensity / 100)})`,
+            background: `rgba(239,68,68,${Math.min(0.06, totalIntensity / 1000)})`,
           }}
         >
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <div className="w-1 h-6 rounded-full bg-red-400" style={{ boxShadow: "0 0 8px #ef4444" }} />
-              <h2 className="text-sm font-mono font-bold text-zinc-200 uppercase tracking-widest">
-                Fault Injection Log
-              </h2>
-            </div>
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono text-zinc-600">{chaosEvents.length} events</span>
-              {chaosEvents.length > 0 && (
-                <motion.button
-                  whileHover={{ scale: 1.04 }}
-                  whileTap={{ scale: 0.96 }}
-                  onClick={() => setChaosEvents([])}
-                  className="text-[10px] font-mono px-2 py-1 rounded border transition-colors"
-                  style={{
-                    background: "rgba(255,255,255,0.03)",
-                    borderColor: "rgba(255,255,255,0.08)",
-                    color: "#71717a",
-                  }}
-                >
-                  Clear
-                </motion.button>
-              )}
-            </div>
-          </div>
-          <FaultLogPanel events={chaosEvents} />
-        </motion.div>
-
-        {/* ── Pipeline Gate Rules ── */}
-        <motion.div
-          variants={fadeInUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-60px" }}
-          className="rounded-2xl border p-6"
-          style={{
-            background: "rgba(9,9,11,0.7)",
-            borderColor: "rgba(6,182,212,0.12)",
-            boxShadow: "0 1px 2px rgba(0,0,0,0.3), 0 8px 32px -8px rgba(0,0,0,0.4)",
-          }}
-        >
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-1 h-6 rounded-full bg-cyan-400" style={{ boxShadow: "0 0 8px #06b6d4" }} />
-            <h2 className="text-sm font-mono font-bold text-zinc-200 uppercase tracking-widest">
-              Automated Quality Gate Rules
-            </h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[
-              { rule: "Mutation Score", threshold: ">= 85%", current: "91.4%", pass: true, icon: <Activity size={14} /> },
-              { rule: "P99 Latency", threshold: "< 300ms", current: `${mounted ? store.p99Latency.toFixed(0) : "142"}ms`, pass: mounted ? store.p99Latency < 300 : true, icon: <Clock size={14} /> },
-              { rule: "E2E Pass Rate", threshold: ">= 98%", current: "99.1%", pass: true, icon: <Check size={14} /> },
-              { rule: "Security Findings", threshold: "0 Critical", current: "0 Critical", pass: true, icon: <Lock size={14} /> },
-              { rule: "Code Coverage", threshold: ">= 90%", current: "94.7%", pass: true, icon: <TrendingUp size={14} /> },
-              { rule: "System Health", threshold: ">= 80%", current: `${mounted ? store.systemHealth.toFixed(1) : "94.7"}%`, pass: mounted ? store.systemHealth >= 80 : true, icon: <Shield size={14} /> },
-            ].map((gate) => (
               <motion.div
-                key={gate.rule}
-                whileHover={{ scale: 1.02, y: -1 }}
-                className="rounded-xl p-4 border flex items-start gap-3"
-                style={{
-                  background: gate.pass ? "rgba(16,185,129,0.04)" : "rgba(239,68,68,0.06)",
-                  borderColor: gate.pass ? "rgba(16,185,129,0.15)" : "rgba(239,68,68,0.2)",
-                }}
-              >
-                <div
-                  className="mt-0.5 shrink-0"
-                  style={{ color: gate.pass ? "#10b981" : "#ef4444" }}
-                >
-                  {gate.pass ? <Check size={14} /> : <XCircle size={14} />}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-xs font-mono font-semibold text-zinc-200 mb-1">{gate.rule}</div>
-                  <div className="text-[10px] font-mono text-zinc-500">Threshold: {gate.threshold}</div>
-                  <div
-                    className="text-[10px] font-mono font-bold mt-1 tabular-nums"
-                    style={{ color: gate.pass ? "#10b981" : "#ef4444" }}
-                  >
-                    {gate.current}
-                  </div>
-                </div>
-                <div style={{ color: gate.pass ? "#10b981" : "#ef4444", opacity: 0.5 }}>
-                  {gate.icon}
-                </div>
-              </motion.div>
-            ))}
+                animate={{ opacity: [1, 0.3, 1] }}
+                transition={{ duration: 0.5, repeat: Infinity }}
+                className="w-2 h-2 rounded-full bg-red-500"
+                style={{ boxShadow: "0 0 8px #ef4444" }}
+              />
+              <span className="text-xs font-mono text-red-400 uppercase tracking-widest">
+                Chaos Intensity Active
+              </span>
+            </div>
+            <span className="text-sm font-mono font-bold tabular-nums text-red-400">
+              {totalIntensity.toFixed(1)}%
+            </span>
           </div>
-
-          {/* Gate decision banner */}
-          <motion.div
-            animate={{
-              borderColor: store.isFaultInjected ? "rgba(239,68,68,0.4)" : "rgba(16,185,129,0.3)",
-              background: store.isFaultInjected ? "rgba(239,68,68,0.06)" : "rgba(16,185,129,0.04)",
-            }}
-            transition={{ duration: 0.5 }}
-            className="mt-6 rounded-xl p-4 border flex items-center justify-between"
-          >
-            <div className="flex items-center gap-3">
-              <motion.div
-                animate={{ opacity: store.isFaultInjected ? [1, 0.3, 1] : 1 }}
-                transition={{ repeat: store.isFaultInjected ? Infinity : 0, duration: 0.8 }}
-              >
-                {store.isFaultInjected ? (
-                  <AlertCircle size={18} className="text-red-400" />
-                ) : (
-                  <Shield size={18} className="text-emerald-400" />
-                )}
-              </motion.div>
-              <div>
-                <div
-                  className="text-sm font-mono font-bold"
-                  style={{ color: store.isFaultInjected ? "#ef4444" : "#10b981" }}
-                >
-                  {store.isFaultInjected ? "PIPELINE GATE: BLOCKED" : "PIPELINE GATE: APPROVED"}
-                </div>
-                <div className="text-[10px] font-mono text-zinc-500 mt-0.5">
-                  {store.isFaultInjected
-                    ? "Fault injection detected. Deployment blocked pending recovery and re-validation."
-                    : "All quality gates passing. Deployment approved for production promotion."}
-                </div>
-              </div>
-            </div>
-            <div
-              className="text-[10px] font-mono px-3 py-1.5 rounded-lg border"
-              style={{
-                color: store.isFaultInjected ? "#ef4444" : "#10b981",
-                borderColor: store.isFaultInjected ? "rgba(239,68,68,0.3)" : "rgba(16,185,129,0.3)",
-                background: store.isFaultInjected ? "rgba(239,68,68,0.08)" : "rgba(16,185,129,0.08)",
-              }}
-            >
-              {store.isFaultInjected ? "BLOCKED" : "DEPLOY"}
-            </div>
-          </motion.div>
+          <div className="mt-2 w-full h-1 rounded-full bg-zinc-800 overflow-hidden">
+            <motion.div
+              className="h-full rounded-full bg-red-500"
+              animate={{ width: `${Math.min(100, totalIntensity)}%` }}
+              transition={{ type: "spring", stiffness: 100, damping: 15 }}
+            />
+          </div>
+          <p className="text-[10px] font-mono text-zinc-500 mt-2">
+            Visual degradation propagated across all shader components. Adjust sliders to modulate
+            fault intensity across network throttling and server stress dimensions.
+          </p>
         </motion.div>
-
-      </div>
+      )}
     </div>
   );
 }
