@@ -1,9 +1,9 @@
 {
   "nav": {
-    "missionControl": "Mission Control",
+    "missionControl": "Mission Control Dashboard",
     "automationSuite": "Automation Suite",
-    "chaosAndPipeline": "Chaos & Pipeline",
-    "methodology": "Methodology"
+    "chaosAndPipeline": "Chaos & Pipeline Gate",
+    "methodology": "Deep-Tech Methodology"
   },
   "brand": {
     "name": "Rao Muhammad Ali",

@@ -21,7 +21,7 @@ export const brand: BrandConstants = {
 
 export const navLinks: NavLink[] = [
   {
-    label: "Mission Control",
+    label: "Mission Control Dashboard",
     href: "/",
     type: "route",
     badge: "LIVE",
@@ -33,23 +33,23 @@ export const navLinks: NavLink[] = [
     badge: "HIGH",
   },
   {
-    label: "Chaos & Pipeline",
+    label: "Chaos & Pipeline Gate",
     href: "/pipeline",
     type: "route",
     badge: "GATE",
   },
   {
-    label: "Methodology",
+    label: "Deep-Tech Methodology",
     href: "/methodology",
     type: "route",
   },
 ];
 
 export const footerLinks: NavLink[] = [
-  { label: "Mission Control", href: "/", type: "route" },
+  { label: "Mission Control Dashboard", href: "/", type: "route" },
   { label: "Automation Suite", href: "/automation", type: "route" },
-  { label: "Chaos & Pipeline", href: "/pipeline", type: "route" },
-  { label: "Methodology", href: "/methodology", type: "route" },
+  { label: "Chaos & Pipeline Gate", href: "/pipeline", type: "route" },
+  { label: "Deep-Tech Methodology", href: "/methodology", type: "route" },
 ];
 
 export interface MetricSnapshot {
