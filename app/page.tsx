@@ -1,7 +1,8 @@
 "use client";
 
-import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+import { motion, useReducedMotion, type Variants } from "framer-motion";
+
 import Link from "next/link";
 import { Activity, AlertTriangle, ArrowRight, Check, CheckCircle, ChevronRight, Circle, Clock, FileCode, GitBranch, Lock, Sparkles, Terminal, Zap } from 'lucide-react';
 import { brand, initialMetrics, techStack, pipelineStages } from "@/lib/data";
@@ -361,10 +362,6 @@ export default function HomePage() {
             {/* Name & Title */}
             <motion.div variants={fadeInUp} className="space-y-3">
               <h1 className="text-5xl md:text-7xl font-bold font-mono tracking-tight">
-                <GlitchText
-                  text="Rao Muhammad Ali"
-                  className="text-transparent bg-clip-text"
-                />
                 <span
                   className="block text-transparent bg-clip-text"
                   style={{
