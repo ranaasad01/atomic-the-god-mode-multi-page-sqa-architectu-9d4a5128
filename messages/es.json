@@ -1,0 +1,73 @@
+{
+  "nav": {
+    "missionControl": "Centro de Control",
+    "automationSuite": "Suite de Automatización",
+    "chaosAndPipeline": "Caos y Pipeline",
+    "methodology": "Metodología"
+  },
+  "brand": {
+    "name": "QE Command Center",
+    "tagline": "Infraestructura Empresarial de Ingeniería de Calidad",
+    "version": "v4.2.1"
+  },
+  "footer": {
+    "copyright": "Todos los sistemas nominales.",
+    "telemetry": "TELEMETRÍA ACTIVA",
+    "stack": "Next.js 14 + TypeScript + Zustand"
+  },
+  "metrics": {
+    "health": "Salud",
+    "passed": "Aprobadas",
+    "failed": "Fallidas",
+    "rps": "RPS",
+    "p99Latency": "Latencia P99",
+    "systemHealth": "Salud del Sistema",
+    "throughput": "Rendimiento",
+    "flakinessIndex": "Índice de Inestabilidad"
+  },
+  "chaos": {
+    "title": "Ingeniería del Caos",
+    "inject": "Inyectar Fallo",
+    "clear": "Limpiar Fallo",
+    "networkThrottle": "Limitación de Red",
+    "serverStress": "Estrés del Servidor",
+    "packetLoss": "Pérdida de Paquetes",
+    "jitter": "Jitter",
+    "cpu": "Inanición de CPU",
+    "memory": "Inanición de Memoria"
+  },
+  "pipeline": {
+    "title": "Puerta de Pipeline",
+    "lint": "Lint",
+    "unit": "Unitarias",
+    "mutation": "Mutación",
+    "integration": "Integración",
+    "e2e": "E2E",
+    "security": "Seguridad"
+  },
+  "terminal": {
+    "title": "Terminal Avanzada",
+    "clear": "Limpiar",
+    "pause": "Pausar",
+    "resume": "Reanudar"
+  },
+  "methodology": {
+    "title": "Metodología de Pruebas",
+    "propertyBased": "Pruebas Basadas en Propiedades",
+    "mutationScore": "Puntuación de Mutación",
+    "formula": "MS = K / D × 100"
+  },
+  "automation": {
+    "title": "Suite de Automatización",
+    "workers": "Workers",
+    "throughput": "Rendimiento",
+    "coverage": "Cobertura",
+    "startRun": "Iniciar Ejecución de Pruebas"
+  },
+  "hero": {
+    "title": "Centro de Control de Ingeniería de Calidad",
+    "subtitle": "Infraestructura de pruebas de nivel empresarial con telemetría en tiempo real, ingeniería del caos y visualizaciones 3D.",
+    "cta": "Lanzar Centro de Control de Misiones",
+    "secondary": "Ver Metodología"
+  }
+}
