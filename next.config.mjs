@@ -1,10 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
-  transpilePackages: ['three', '@react-three/fiber', '@react-three/drei'],
-  experimental: {
-    esmExternals: 'loose',
-  },
+  transpilePackages: ['three', '@react-three/fiber'],
   images: {
     remotePatterns: [{ protocol: 'https', hostname: '**' }],
   },
