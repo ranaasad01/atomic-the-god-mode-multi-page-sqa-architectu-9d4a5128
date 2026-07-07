@@ -2,11 +2,10 @@
 
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import * as THREE from "three";
 import { Activity, Terminal, CheckCircle, XCircle, Clock, Cpu, Layers, Play, Pause, RotateCcw, ChevronRight, AlertTriangle, Zap, GitBranch, Eye, Filter } from 'lucide-react';
 import { fadeInUp, staggerContainer, scaleIn, fadeIn } from "@/lib/motion";
 import { useTranslations } from "next-intl";
+import dynamic from "next/dynamic";
 
 // ─── Zustand store (inline minimal mirror to avoid import issues) ─────────────
 import { create } from "zustand";
@@ -152,325 +151,222 @@ const LOG_TEMPLATES: Array<{ level: LogLevel; messages: string[] }> = [
       '▶ When user submits OTP verification form',
       '▶ Then dashboard should be visible within 3000ms',
       '▶ Given dataset upload modal is open',
-      '▶ When user selects large CSV file (1.2GB)',
+      '▶ When user selects file "large_dataset_500mb.csv"',
       '▶ Then upload progress bar should reach 100%',
-      '▶ Given buyer is on Stripe checkout page',
-      '▶ When buyer enters valid card details',
-      '▶ Then payment confirmation email should be sent',
+      '▶ Given Stripe checkout is initiated',
+      '▶ When user enters card number "4242 4242 4242 4242"',
+      '▶ Then payment confirmation modal should appear',
     ],
   },
   {
     level: "pass",
     messages: [
-      '  ✓  [chromium] › auth/otp-verification.spec.ts:12 — should send OTP on login (234ms)',
-      '  ✓  [chromium] › auth/session.spec.ts:28 — should maintain session across tabs (189ms)',
-      '  ✓  [firefox] › dataset/upload.spec.ts:15 — should upload large CSV file (1.2GB) (4301ms)',
-      '  ✓  [webkit] › payment/stripe.spec.ts:8 — should complete buyer onboarding (2100ms)',
-      '  ✓  [chromium] › chat/messaging.spec.ts:22 — should persist messages after reload (310ms)',
-      '  ✓  [chromium] › security/rbac.spec.ts:5 — admin should access all routes (145ms)',
-      '  ✓  [firefox] › mobile/viewport.spec.ts:9 — should render correctly on 375px (201ms)',
-      '  ✓  [chromium] › desktop/macos.spec.ts:3 — should launch on macOS Ventura (512ms)',
-      '  ✓  [webkit] › dataset/cloud-import.spec.ts:18 — should import from Google Drive (3820ms)',
-      '  ✓  [chromium] › auth/rbac.spec.ts:14 — seller should not access admin panel (98ms)',
+      "✓ auth.spec.ts:42 — OTP verification flow [PASS] 1.2s",
+      "✓ dataset.spec.ts:88 — Cloud import from S3 [PASS] 3.4s",
+      "✓ payment.spec.ts:15 — Stripe webhook received [PASS] 0.8s",
+      "✓ security.spec.ts:7 — RBAC admin role enforced [PASS] 0.3s",
+      "✓ mobile.spec.ts:33 — Viewport 375px renders correctly [PASS] 0.6s",
+      "✓ chat.spec.ts:21 — WebSocket message delivered [PASS] 0.4s",
+      "✓ desktop.spec.ts:12 — macOS window resize [PASS] 1.1s",
     ],
   },
   {
     level: "fail",
     messages: [
-      '  ✗  [chromium] › api/endpoints.spec.ts:44 — POST /api/datasets — expected 201 got 500 (88ms)',
-      '  ✗  [firefox] › payment/kyc.spec.ts:31 — KYC status should update to verified (timeout 30000ms)',
-      '  ✗  [chromium] › chat/ordering.spec.ts:17 — messages should appear in correct order (failed assertion)',
-      '  ✗  [webkit] › api/endpoints.spec.ts:88 — DELETE /api/datasets/:id — expected 204 got 403 (112ms)',
-    ],
-  },
-  {
-    level: "warn",
-    messages: [
-      '  ⚠  Flaky test detected: chat/messaging.spec.ts:22 — retry 1/3',
-      '  ⚠  Slow test: dataset/upload.spec.ts:15 — exceeded 4000ms threshold',
-      '  ⚠  Network throttle active — packet loss 2% detected',
-      '  ⚠  Stripe sandbox rate limit approaching — 80% of quota used',
-    ],
-  },
-  {
-    level: "debug",
-    messages: [
-      '  console.log  [W2] Uploading chunk 847/1024 — 82.7% complete',
-      '  console.assert  Expected status 201, received 500 — {"trace":"4f2a1b","endpoint":"/api/datasets"}',
-      '  console.log  [W1] OTP received via mock SMTP: 482910',
-      '  console.log  [W4] Stripe webhook payload validated — event: payment_intent.succeeded',
-      '  console.log  [W3] WebSocket connection established — chat room: buyer-seller-4821',
+      "✗ api.spec.ts:103 — POST /api/datasets 422 Unprocessable Entity [FAIL] 2.1s",
+      "✗ chat.spec.ts:67 — WebSocket reconnect timeout exceeded [FAIL] 5.0s",
+      "✗ api.spec.ts:211 — GET /api/users/me 401 Unauthorized [FAIL] 0.9s",
     ],
   },
   {
     level: "info",
     messages: [
-      '▶  Playwright v1.44.0 — parallel workers: 4 — Project: Veridat QA Suite',
-      '  ℹ  Retrying failed test: api/endpoints.spec.ts:44 (attempt 2/3)',
-      '  ℹ  Screenshot captured: screenshots/payment-kyc-failure-1721234567.png',
-      '  ℹ  Trace saved: traces/chat-ordering-failure.zip',
-      '  ℹ  Worker W3 assigned: desktop/linux.spec.ts',
+      "[playwright] Launching Chromium browser — headless: true",
+      "[playwright] Launching Firefox browser — headless: true",
+      "[playwright] Launching WebKit browser — headless: true",
+      "[runner] Distributing 376 tests across 4 workers",
+      "[runner] Test isolation: per-test context",
+      "[network] Intercepting API calls on localhost:3000",
+      "[storage] Clearing browser storage between tests",
+    ],
+  },
+  {
+    level: "warn",
+    messages: [
+      "[warn] Slow test detected: payment.spec.ts:89 took 22.4s",
+      "[warn] Flaky selector: .toast-notification — retrying (1/3)",
+      "[warn] Network request timeout: /api/export — 10000ms exceeded",
+      "[warn] Memory usage high on Worker 2: 1.8GB",
+    ],
+  },
+  {
+    level: "debug",
+    messages: [
+      'DEBUG page.evaluate: document.title === "Veridat Dashboard"',
+      "DEBUG locator resolved: [data-testid=\"upload-btn\"] → 1 element",
+      "DEBUG screenshot captured: test-failure-api-103.png",
+      "DEBUG trace saved: playwright-trace-auth-42.zip",
+      'DEBUG console.log from page: "[App] User authenticated: qa@veridat.com"',
     ],
   },
 ];
 
-const INITIAL_LOGS: LogEntry[] = [
-  { id: 1, ts: "09:41:00", level: "info", worker: "MAIN", message: "▶  Playwright v1.44.0 — parallel workers: 4 — Project: Veridat QA Suite" },
-  { id: 2, ts: "09:41:01", level: "pass", worker: "W1", message: "  ✓  [chromium] › auth/otp-verification.spec.ts:12 — should send OTP on login (234ms)" },
-  { id: 3, ts: "09:41:02", level: "pass", worker: "W1", message: "  ✓  [chromium] › auth/session.spec.ts:28 — should maintain session across tabs (189ms)" },
-  { id: 4, ts: "09:41:03", level: "pass", worker: "W2", message: "  ✓  [firefox] › dataset/upload.spec.ts:15 — should upload large CSV file (1.2GB) (4301ms)" },
-  { id: 5, ts: "09:41:04", level: "fail", worker: "W3", message: "  ✗  [chromium] › api/endpoints.spec.ts:44 — POST /api/datasets — expected 201 got 500 (88ms)" },
-  { id: 6, ts: "09:41:05", level: "pass", worker: "W4", message: "  ✓  [webkit] › payment/stripe.spec.ts:8 — should complete buyer onboarding (2100ms)" },
-  { id: 7, ts: "09:41:06", level: "pass", worker: "W2", message: "  ✓  [chromium] › chat/messaging.spec.ts:22 — should persist messages after reload (310ms)" },
-  { id: 8, ts: "09:41:07", level: "pass", worker: "W4", message: "  ✓  [chromium] › security/rbac.spec.ts:5 — admin should access all routes (145ms)" },
-  { id: 9, ts: "09:41:08", level: "warn", worker: "W3", message: "  ⚠  Flaky test detected: chat/messaging.spec.ts:22 — retry 1/3" },
-  { id: 10, ts: "09:41:09", level: "debug", worker: "W2", message: '  console.assert  Expected status 201, received 500 — {"trace":"4f2a1b","endpoint":"/api/datasets"}' },
-];
-
-// ─── Three.js Double Helix ────────────────────────────────────────────────────
-
-interface HelixNode {
-  position: THREE.Vector3;
-  status: "executing" | "passed" | "failed";
-  index: number;
+function getRandomLog(counter: number): LogEntry {
+  const template = LOG_TEMPLATES[Math.floor(Math.random() * LOG_TEMPLATES.length)];
+  const messages = template.messages;
+  const message = messages[Math.floor(Math.random() * messages.length)];
+  const workers = ["W1", "W2", "W3", "W4"];
+  const worker = workers[Math.floor(Math.random() * workers.length)];
+  const now = new Date();
+  const ts = `${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}:${now.getSeconds().toString().padStart(2, "0")}.${now.getMilliseconds().toString().padStart(3, "0")}`;
+  return { id: counter, ts, level: template.level, worker, message };
 }
 
-function BiHelixStream({ scrollY }: { scrollY: number }) {
-  const groupRef = useRef<THREE.Group>(null);
-  const nodesRef = useRef<THREE.InstancedMesh>(null);
-  const connectorsRef = useRef<THREE.InstancedMesh>(null);
+// ─── Log Level Colors ─────────────────────────────────────────────────────────
 
-  const nodes = useMemo<HelixNode[]>(() => {
-    const result: HelixNode[] = [];
-    const count = 40;
-    for (let i = 0; i < count; i++) {
-      const t = (i / count) * Math.PI * 8;
-      const y = i * 0.4 - 8;
-      // Strand A
-      result.push({
-        position: new THREE.Vector3(Math.cos(t) * 1.5, y, Math.sin(t) * 1.5),
-        status: i % 7 === 3 ? "failed" : i % 5 === 0 ? "executing" : "passed",
-        index: i * 2,
-      });
-      // Strand B
-      result.push({
-        position: new THREE.Vector3(Math.cos(t + Math.PI) * 1.5, y, Math.sin(t + Math.PI) * 1.5),
-        status: i % 9 === 4 ? "failed" : i % 4 === 0 ? "executing" : "passed",
-        index: i * 2 + 1,
-      });
-    }
-    return result;
-  }, []);
+const LOG_COLORS: Record<LogLevel, string> = {
+  info: "#06b6d4",
+  pass: "#10b981",
+  fail: "#ef4444",
+  warn: "#f59e0b",
+  debug: "#6b7280",
+  step: "#a78bfa",
+};
 
-  const dummy = useMemo(() => new THREE.Object3D(), []);
-  const colorMap: Record<string, THREE.Color> = useMemo(
-    () => ({
-      executing: new THREE.Color("#f59e0b"),
-      passed: new THREE.Color("#10b981"),
-      failed: new THREE.Color("#ef4444"),
-    }),
-    []
-  );
+const LOG_BG: Record<LogLevel, string> = {
+  info: "rgba(6,182,212,0.04)",
+  pass: "rgba(16,185,129,0.04)",
+  fail: "rgba(239,68,68,0.08)",
+  warn: "rgba(245,158,11,0.06)",
+  debug: "rgba(107,114,128,0.04)",
+  step: "rgba(167,139,250,0.06)",
+};
 
-  useFrame((state) => {
-    if (!groupRef.current) return;
-    const t = state.clock.getElapsedTime();
-    groupRef.current.rotation.y = t * 0.15;
-    groupRef.current.position.y = Math.sin(t * 0.3) * 0.2 - scrollY * 0.003;
-
-    if (nodesRef.current) {
-      nodes.forEach((node, i) => {
-        dummy.position.copy(node.position);
-        const pulse = node.status === "executing" ? 0.12 + Math.sin(t * 3 + i) * 0.06 : 0.1;
-        dummy.scale.setScalar(pulse);
-        dummy.updateMatrix();
-        nodesRef.current!.setMatrixAt(i, dummy.matrix);
-        nodesRef.current!.setColorAt(i, colorMap[node.status]);
-      });
-      nodesRef.current.instanceMatrix.needsUpdate = true;
-      if (nodesRef.current.instanceColor) nodesRef.current.instanceColor.needsUpdate = true;
-    }
-  });
-
-  return (
-    <group ref={groupRef}>
-      {/* Helix nodes */}
-      <instancedMesh ref={nodesRef} args={[undefined, undefined, nodes.length]}>
-        <sphereGeometry args={[1, 8, 8]} />
-        <meshStandardMaterial
-          emissive="#10b981"
-          emissiveIntensity={0.6}
-          roughness={0.3}
-          metalness={0.7}
-        />
-      </instancedMesh>
-
-      {/* Base pair connectors */}
-      {Array.from({ length: 20 }, (_, i) => {
-        const t = (i / 20) * Math.PI * 8;
-        const y = i * 0.8 - 8;
-        const xA = Math.cos(t) * 1.5;
-        const zA = Math.sin(t) * 1.5;
-        const xB = Math.cos(t + Math.PI) * 1.5;
-        const zB = Math.sin(t + Math.PI) * 1.5;
-        const midX = (xA + xB) / 2;
-        const midZ = (zA + zB) / 2;
-        const length = Math.sqrt((xB - xA) ** 2 + (zB - zA) ** 2);
-        const angle = Math.atan2(zB - zA, xB - xA);
-        return (
-          <mesh
-            key={i}
-            position={[midX, y, midZ]}
-            rotation={[0, -angle, Math.PI / 2]}
-          >
-            <cylinderGeometry args={[0.02, 0.02, length, 4]} />
-            <meshStandardMaterial
-              color="#06b6d4"
-              emissive="#06b6d4"
-              emissiveIntensity={0.3}
-              transparent
-              opacity={0.5}
-            />
-          </mesh>
-        );
-      })}
-
-      <ambientLight intensity={0.3} />
-      <pointLight position={[5, 5, 5]} intensity={1} color="#10b981" />
-      <pointLight position={[-5, -5, -5]} intensity={0.5} color="#06b6d4" />
-    </group>
-  );
-}
-
-// ─── Terminal Component ───────────────────────────────────────────────────────
+// ─── Advanced Terminal Component ──────────────────────────────────────────────
 
 function AdvancedTerminal() {
-  const [logs, setLogs] = useState<LogEntry[]>(INITIAL_LOGS);
-  const [paused, setPaused] = useState(false);
+  const [logs, setLogs] = useState<LogEntry[]>([]);
+  const [running, setRunning] = useState(true);
   const [filter, setFilter] = useState<LogLevel | "all">("all");
+  const [counter, setCounter] = useState(0);
   const terminalRef = useRef<HTMLDivElement>(null);
-  const counterRef = useRef(INITIAL_LOGS.length + 1);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const getTimestamp = useCallback(() => {
-    const now = new Date();
-    const h = now.getHours().toString().padStart(2, "0");
-    const m = now.getMinutes().toString().padStart(2, "0");
-    const s = now.getSeconds().toString().padStart(2, "0");
-    return `${h}:${m}:${s}`;
+  useEffect(() => {
+    // Seed with initial logs
+    const initial: LogEntry[] = [];
+    let c = 0;
+    for (let i = 0; i < 20; i++) {
+      initial.push(getRandomLog(c++));
+    }
+    setLogs(initial);
+    setCounter(c);
   }, []);
 
-  const addLog = useCallback(() => {
-    const templateGroup = LOG_TEMPLATES[Math.floor(Math.random() * LOG_TEMPLATES.length)];
-    const message = templateGroup.messages[Math.floor(Math.random() * templateGroup.messages.length)];
-    const workerIds = ["W1", "W2", "W3", "W4", "MAIN"];
-    const newLog: LogEntry = {
-      id: counterRef.current++,
-      ts: getTimestamp(),
-      level: templateGroup.level,
-      worker: workerIds[Math.floor(Math.random() * workerIds.length)],
-      message,
-    };
-    setLogs((prev) => [...prev.slice(-199), newLog]);
-  }, [getTimestamp]);
-
   useEffect(() => {
-    if (paused) {
+    if (!running) {
       if (intervalRef.current) clearInterval(intervalRef.current);
       return;
     }
-    intervalRef.current = setInterval(addLog, 600 + Math.random() * 400);
+    intervalRef.current = setInterval(() => {
+      setCounter((prev) => {
+        const newLog = getRandomLog(prev);
+        setLogs((l) => {
+          const next = [...l, newLog];
+          return next.slice(-200);
+        });
+        return prev + 1;
+      });
+    }, 180);
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [paused, addLog]);
+  }, [running]);
 
   useEffect(() => {
-    if (terminalRef.current && !paused) {
+    if (terminalRef.current) {
       terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
     }
-  }, [logs, paused]);
+  }, [logs]);
 
-  const levelColors: Record<LogLevel, string> = {
-    info: "#06b6d4",
-    pass: "#10b981",
-    fail: "#ef4444",
-    warn: "#f59e0b",
-    debug: "#8b5cf6",
-    step: "#94a3b8",
-  };
+  const filteredLogs = useMemo(
+    () => (filter === "all" ? logs : logs.filter((l) => l.level === filter)),
+    [logs, filter]
+  );
 
-  const levelLabels: Record<LogLevel, string> = {
-    info: "INFO",
-    pass: "PASS",
-    fail: "FAIL",
-    warn: "WARN",
-    debug: "DBG ",
-    step: "STEP",
-  };
-
-  const filteredLogs = filter === "all" ? logs : logs.filter((l) => l.level === filter);
+  const levelCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    logs.forEach((l) => {
+      counts[l.level] = (counts[l.level] || 0) + 1;
+    });
+    return counts;
+  }, [logs]);
 
   return (
     <div
-      className="rounded-lg overflow-hidden"
+      className="rounded-xl border overflow-hidden"
       style={{
-        background: "rgba(9,9,11,0.95)",
-        border: "1px solid rgba(16,185,129,0.2)",
-        boxShadow: "0 0 40px rgba(16,185,129,0.05)",
+        borderColor: "rgba(16,185,129,0.15)",
+        background: "rgba(0,0,0,0.6)",
+        backdropFilter: "blur(12px)",
       }}
     >
       {/* Terminal header */}
       <div
-        className="flex items-center justify-between px-4 py-2"
-        style={{ borderBottom: "1px solid rgba(16,185,129,0.15)" }}
+        className="flex items-center justify-between px-4 py-2 border-b"
+        style={{ borderColor: "rgba(16,185,129,0.1)", background: "rgba(0,0,0,0.4)" }}
       >
         <div className="flex items-center gap-3">
           <div className="flex gap-1.5">
-            <div className="w-3 h-3 rounded-full bg-red-500 opacity-80" />
-            <div className="w-3 h-3 rounded-full bg-yellow-500 opacity-80" />
-            <div className="w-3 h-3 rounded-full bg-green-500 opacity-80" />
+            <div className="w-3 h-3 rounded-full bg-red-500/70" />
+            <div className="w-3 h-3 rounded-full bg-yellow-500/70" />
+            <div className="w-3 h-3 rounded-full bg-green-500/70" />
           </div>
-          <span className="text-xs font-mono text-zinc-400">veridat-qa — playwright — 4 workers</span>
+          <span className="text-xs font-mono text-zinc-400">playwright-runner — 4 workers</span>
+          {running && (
+            <span className="flex items-center gap-1 text-[10px] font-mono text-emerald-400">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              LIVE
+            </span>
+          )}
         </div>
         <div className="flex items-center gap-2">
-          {(["all", "pass", "fail", "warn", "info"] as const).map((f) => (
-            <button
-              key={f}
-              onClick={() => setFilter(f as LogLevel | "all")}
-              className="text-[10px] font-mono px-2 py-0.5 rounded transition-all"
-              style={{
-                background: filter === f ? "rgba(16,185,129,0.2)" : "transparent",
-                color: filter === f ? "#10b981" : "#52525b",
-                border: `1px solid ${filter === f ? "rgba(16,185,129,0.4)" : "transparent"}`,
-              }}
-            >
-              {f.toUpperCase()}
-            </button>
-          ))}
+          {/* Filter buttons */}
+          <div className="flex gap-1">
+            {(["all", "pass", "fail", "warn", "step", "debug"] as const).map((lvl) => (
+              <button
+                key={lvl}
+                onClick={() => setFilter(lvl)}
+                className="px-2 py-0.5 rounded text-[9px] font-mono uppercase transition-all"
+                style={{
+                  background: filter === lvl
+                    ? lvl === "all" ? "rgba(16,185,129,0.2)" : `${LOG_COLORS[lvl as LogLevel]}22`
+                    : "transparent",
+                  color: filter === lvl
+                    ? lvl === "all" ? "#10b981" : LOG_COLORS[lvl as LogLevel]
+                    : "#52525b",
+                  border: `1px solid ${
+                    filter === lvl
+                      ? lvl === "all" ? "rgba(16,185,129,0.3)" : `${LOG_COLORS[lvl as LogLevel]}44`
+                      : "transparent"
+                  }`,
+                }}
+              >
+                {lvl}{lvl !== "all" && levelCounts[lvl] ? ` (${levelCounts[lvl]})` : ""}
+              </button>
+            ))}
+          </div>
           <button
-            onClick={() => setPaused((p) => !p)}
-            className="flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded transition-all"
-            style={{
-              background: paused ? "rgba(245,158,11,0.15)" : "rgba(16,185,129,0.1)",
-              color: paused ? "#f59e0b" : "#10b981",
-              border: `1px solid ${paused ? "rgba(245,158,11,0.3)" : "rgba(16,185,129,0.2)"}`,
-            }}
+            onClick={() => setRunning((r) => !r)}
+            className="p-1 rounded text-zinc-400 hover:text-emerald-400 transition-colors"
           >
-            {paused ? <Play size={10} /> : <Pause size={10} />}
-            {paused ? "RESUME" : "PAUSE"}
+            {running ? <Pause size={12} /> : <Play size={12} />}
           </button>
           <button
-            onClick={() => setLogs(INITIAL_LOGS)}
-            className="flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded transition-all"
-            style={{
-              background: "rgba(239,68,68,0.1)",
-              color: "#ef4444",
-              border: "1px solid rgba(239,68,68,0.2)",
-            }}
+            onClick={() => setLogs([])}
+            className="p-1 rounded text-zinc-400 hover:text-amber-400 transition-colors"
           >
-            <RotateCcw size={10} />
-            CLEAR
+            <RotateCcw size={12} />
           </button>
         </div>
       </div>
@@ -479,470 +375,632 @@ function AdvancedTerminal() {
       <div
         ref={terminalRef}
         className="h-80 overflow-y-auto p-3 space-y-0.5"
-        style={{ fontFamily: "monospace" }}
+        style={{ fontFamily: "'Courier New', monospace" }}
       >
         {filteredLogs.map((log) => (
-          <motion.div
+          <div
             key={log.id}
-            initial={{ opacity: 0, x: -8 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.15 }}
-            className="flex items-start gap-2 text-[11px] leading-5"
+            className="flex items-start gap-2 px-2 py-0.5 rounded text-[11px] leading-relaxed"
+            style={{ background: LOG_BG[log.level] }}
           >
             <span className="text-zinc-600 shrink-0 tabular-nums">{log.ts}</span>
             <span
-              className="shrink-0 px-1 rounded text-[9px] font-bold tabular-nums"
-              style={{
-                color: levelColors[log.level],
-                background: `${levelColors[log.level]}18`,
-              }}
+              className="shrink-0 uppercase font-bold w-10 text-center"
+              style={{ color: LOG_COLORS[log.level] }}
             >
-              {levelLabels[log.level]}
+              {log.level}
             </span>
             <span className="text-zinc-500 shrink-0">[{log.worker}]</span>
-            <span
-              style={{ color: levelColors[log.level] }}
-              className="break-all"
-            >
+            <span style={{ color: LOG_COLORS[log.level] === "#6b7280" ? "#71717a" : "#d4d4d8" }}>
               {log.message}
             </span>
-          </motion.div>
+          </div>
         ))}
-        {!paused && (
-          <div className="flex items-center gap-1 text-[11px] text-emerald-400">
-            <span className="animate-pulse">█</span>
+        {filteredLogs.length === 0 && (
+          <div className="text-center text-zinc-600 text-xs font-mono py-8">
+            No logs matching filter &quot;{filter}&quot;
           </div>
         )}
+      </div>
+
+      {/* Status bar */}
+      <div
+        className="flex items-center justify-between px-4 py-1.5 border-t text-[10px] font-mono"
+        style={{ borderColor: "rgba(16,185,129,0.1)", background: "rgba(0,0,0,0.3)" }}
+      >
+        <span className="text-zinc-600">{logs.length} lines buffered</span>
+        <div className="flex gap-4">
+          <span style={{ color: LOG_COLORS.pass }}>✓ {levelCounts.pass || 0} pass</span>
+          <span style={{ color: LOG_COLORS.fail }}>✗ {levelCounts.fail || 0} fail</span>
+          <span style={{ color: LOG_COLORS.warn }}>⚠ {levelCounts.warn || 0} warn</span>
+        </div>
       </div>
     </div>
   );
 }
 
-// ─── Suite Row ────────────────────────────────────────────────────────────────
+// ─── Helix Visualization (Canvas-based, no Three.js SSR issues) ──────────────
 
-function SuiteRow({
+function HelixVisualization() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animRef = useRef<number>(0);
+  const scrollY = useRef(0);
+  const [hoveredNode, setHoveredNode] = useState<number | null>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const W = canvas.width;
+    const H = canvas.height;
+    const NUM_NODES = 24;
+    const nodeStatuses: Array<"executing" | "pass" | "fail"> = Array.from(
+      { length: NUM_NODES },
+      (_, i) => {
+        if (i < 8) return "pass";
+        if (i === 10 || i === 14 || i === 18) return "fail";
+        if (i >= 20) return "executing";
+        return "pass";
+      }
+    );
+
+    let t = 0;
+
+    const draw = () => {
+      ctx.clearRect(0, 0, W, H);
+      t += 0.012;
+
+      const cx = W / 2;
+      const radius = 60;
+      const verticalSpacing = H / (NUM_NODES + 1);
+
+      // Draw helix strands
+      for (let strand = 0; strand < 2; strand++) {
+        ctx.beginPath();
+        for (let i = 0; i <= NUM_NODES * 4; i++) {
+          const frac = i / (NUM_NODES * 4);
+          const angle = frac * Math.PI * 6 + t + (strand === 1 ? Math.PI : 0);
+          const x = cx + Math.cos(angle) * radius;
+          const y = frac * H;
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.strokeStyle = strand === 0
+          ? "rgba(16,185,129,0.25)"
+          : "rgba(6,182,212,0.25)";
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      }
+
+      // Draw base pairs and nodes
+      for (let i = 0; i < NUM_NODES; i++) {
+        const frac = (i + 1) / (NUM_NODES + 1);
+        const angle = frac * Math.PI * 6 + t;
+        const x1 = cx + Math.cos(angle) * radius;
+        const x2 = cx + Math.cos(angle + Math.PI) * radius;
+        const y = frac * H;
+
+        const status = nodeStatuses[i];
+        const nodeColor =
+          status === "pass"
+            ? "#10b981"
+            : status === "fail"
+            ? "#ef4444"
+            : "#f59e0b";
+
+        // Base pair connector
+        ctx.beginPath();
+        ctx.moveTo(x1, y);
+        ctx.lineTo(x2, y);
+        ctx.strokeStyle = `${nodeColor}33`;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // Node circles
+        [x1, x2].forEach((nx) => {
+          ctx.beginPath();
+          ctx.arc(nx, y, hoveredNode === i ? 7 : 5, 0, Math.PI * 2);
+          ctx.fillStyle = nodeColor;
+          ctx.shadowColor = nodeColor;
+          ctx.shadowBlur = hoveredNode === i ? 16 : 8;
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        });
+
+        // Executing pulse
+        if (status === "executing") {
+          const pulse = Math.sin(t * 4 + i) * 0.5 + 0.5;
+          ctx.beginPath();
+          ctx.arc(x1, y, 5 + pulse * 8, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(245,158,11,${0.3 * pulse})`;
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+      }
+
+      animRef.current = requestAnimationFrame(draw);
+    };
+
+    animRef.current = requestAnimationFrame(draw);
+    return () => cancelAnimationFrame(animRef.current);
+  }, [hoveredNode]);
+
+  return (
+    <div className="relative w-full h-full flex items-center justify-center">
+      <canvas
+        ref={canvasRef}
+        width={200}
+        height={600}
+        className="opacity-90"
+        style={{ maxHeight: "100%" }}
+      />
+      <div className="absolute top-4 right-4 space-y-2 text-[10px] font-mono">
+        {[
+          { color: "#10b981", label: "PASS" },
+          { color: "#ef4444", label: "FAIL" },
+          { color: "#f59e0b", label: "EXEC" },
+        ].map((item) => (
+          <div key={item.label} className="flex items-center gap-1.5">
+            <div
+              className="w-2 h-2 rounded-full"
+              style={{ backgroundColor: item.color, boxShadow: `0 0 6px ${item.color}` }}
+            />
+            <span className="text-zinc-500">{item.label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Test Suite Row ───────────────────────────────────────────────────────────
+
+function TestSuiteRow({
   suite,
   index,
 }: {
   suite: (typeof TEST_SUITES)[0];
   index: number;
 }) {
+  const [expanded, setExpanded] = useState(false);
   const total = suite.passed + suite.failed + suite.skipped;
   const passRate = total > 0 ? (suite.passed / total) * 100 : 0;
-  const statusColor =
-    suite.status === "passed"
-      ? "#10b981"
-      : suite.status === "failed"
-      ? "#ef4444"
-      : "#f59e0b";
 
   return (
     <motion.div
       variants={fadeInUp}
-      className="group flex items-center gap-4 px-4 py-3 rounded-lg cursor-pointer transition-all duration-200"
+      className="rounded-lg border overflow-hidden cursor-pointer"
       style={{
+        borderColor:
+          suite.status === "passed"
+            ? "rgba(16,185,129,0.2)"
+            : "rgba(239,68,68,0.2)",
         background: "rgba(9,9,11,0.6)",
-        border: `1px solid rgba(16,185,129,0.08)`,
       }}
-      whileHover={{
-        background: "rgba(16,185,129,0.04)",
-        borderColor: "rgba(16,185,129,0.2)",
-      }}
+      onClick={() => setExpanded((e) => !e)}
     >
-      {/* Status indicator */}
-      <div
-        className="w-2 h-2 rounded-full shrink-0"
-        style={{
-          backgroundColor: statusColor,
-          boxShadow: `0 0 6px ${statusColor}`,
-        }}
-      />
+      <div className="flex items-center gap-3 px-4 py-3">
+        {/* Status icon */}
+        <div className="shrink-0">
+          {suite.status === "passed" ? (
+            <CheckCircle size={16} className="text-emerald-400" />
+          ) : (
+            <XCircle size={16} className="text-red-400" />
+          )}
+        </div>
 
-      {/* Suite info */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-mono font-semibold text-zinc-200 truncate">
-            {suite.name}
-          </span>
-          <span className="text-[10px] font-mono text-zinc-600 shrink-0">
-            {suite.file}
-          </span>
-        </div>
-        {/* Progress bar */}
-        <div className="mt-1.5 h-1 rounded-full bg-zinc-800 overflow-hidden">
-          <motion.div
-            className="h-full rounded-full"
-            style={{ backgroundColor: statusColor }}
-            initial={{ width: 0 }}
-            animate={{ width: `${passRate}%` }}
-            transition={{ duration: 1, delay: index * 0.1, ease: "easeOut" }}
-          />
-        </div>
-      </div>
-
-      {/* Stats */}
-      <div className="flex items-center gap-4 shrink-0">
-        <div className="text-center">
-          <div className="text-xs font-mono font-bold text-emerald-400">{suite.passed}</div>
-          <div className="text-[9px] font-mono text-zinc-600">PASS</div>
-        </div>
-        <div className="text-center">
-          <div className="text-xs font-mono font-bold" style={{ color: suite.failed > 0 ? "#ef4444" : "#52525b" }}>
-            {suite.failed}
+        {/* Suite info */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-mono text-zinc-200 truncate">{suite.name}</span>
+            <span className="text-[10px] font-mono text-zinc-600 shrink-0">{suite.file}</span>
           </div>
-          <div className="text-[9px] font-mono text-zinc-600">FAIL</div>
+          {/* Progress bar */}
+          <div className="mt-1.5 h-1 rounded-full bg-zinc-800 overflow-hidden">
+            <div
+              className="h-full rounded-full transition-all duration-500"
+              style={{
+                width: `${passRate}%`,
+                background:
+                  passRate > 95
+                    ? "#10b981"
+                    : passRate > 80
+                    ? "#f59e0b"
+                    : "#ef4444",
+              }}
+            />
+          </div>
         </div>
-        <div className="text-center">
-          <div className="text-xs font-mono font-bold text-zinc-500">{suite.skipped}</div>
-          <div className="text-[9px] font-mono text-zinc-600">SKIP</div>
+
+        {/* Stats */}
+        <div className="flex items-center gap-4 shrink-0 text-[11px] font-mono">
+          <span className="text-emerald-400">{suite.passed}✓</span>
+          {suite.failed > 0 && (
+            <span className="text-red-400">{suite.failed}✗</span>
+          )}
+          {suite.skipped > 0 && (
+            <span className="text-zinc-600">{suite.skipped}⊘</span>
+          )}
+          <span className="text-zinc-500">{suite.duration}</span>
+          <span
+            className="px-1.5 py-0.5 rounded text-[9px] uppercase"
+            style={{
+              background: "rgba(6,182,212,0.1)",
+              color: "#06b6d4",
+              border: "1px solid rgba(6,182,212,0.2)",
+            }}
+          >
+            {suite.worker}
+          </span>
         </div>
-        <div className="text-center">
-          <div className="text-xs font-mono text-zinc-400">{suite.duration}</div>
-          <div className="text-[9px] font-mono text-zinc-600">DUR</div>
-        </div>
-        <div
-          className="text-[10px] font-mono px-2 py-0.5 rounded"
-          style={{
-            color: statusColor,
-            background: `${statusColor}18`,
-            border: `1px solid ${statusColor}40`,
-          }}
-        >
-          {suite.worker}
-        </div>
+
+        <ChevronRight
+          size={14}
+          className={`text-zinc-600 transition-transform duration-200 ${
+            expanded ? "rotate-90" : ""
+          }`}
+        />
       </div>
+
+      {/* Expanded detail */}
+      <AnimatePresence>
+        {expanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="border-t px-4 py-3"
+            style={{ borderColor: "rgba(16,185,129,0.08)" }}
+          >
+            <div className="grid grid-cols-3 gap-4 text-[11px] font-mono">
+              <div>
+                <div className="text-zinc-600 mb-1">Pass Rate</div>
+                <div className="text-emerald-400 font-bold">{passRate.toFixed(1)}%</div>
+              </div>
+              <div>
+                <div className="text-zinc-600 mb-1">Total Tests</div>
+                <div className="text-zinc-300">{total}</div>
+              </div>
+              <div>
+                <div className="text-zinc-600 mb-1">Duration</div>
+                <div className="text-cyan-400">{suite.duration}</div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
 
-// ─── Worker Card ──────────────────────────────────────────────────────────────
+// ─── Worker Grid ──────────────────────────────────────────────────────────────
 
-function WorkerCard({ worker }: { worker: (typeof WORKERS)[0] }) {
-  const [util, setUtil] = useState(worker.utilization);
+function WorkerGrid() {
+  const [workerStats, setWorkerStats] = useState(WORKERS);
 
   useEffect(() => {
     const id = setInterval(() => {
-      setUtil(Math.min(100, Math.max(0, worker.utilization + (Math.random() - 0.5) * 12)));
-    }, 1200);
+      setWorkerStats((prev) =>
+        prev.map((w) => ({
+          ...w,
+          utilization: Math.min(
+            100,
+            Math.max(0, w.utilization + (Math.random() - 0.5) * 10)
+          ),
+        }))
+      );
+    }, 1500);
     return () => clearInterval(id);
-  }, [worker.utilization]);
-
-  const color = util > 85 ? "#ef4444" : util > 65 ? "#f59e0b" : "#10b981";
+  }, []);
 
   return (
-    <motion.div
-      variants={scaleIn}
-      className="p-3 rounded-lg"
-      style={{
-        background: "rgba(9,9,11,0.8)",
-        border: "1px solid rgba(16,185,129,0.1)",
-      }}
-    >
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-xs font-mono font-bold text-zinc-300">{worker.id}</span>
-        <span className="text-[10px] font-mono text-zinc-500">{worker.browser}</span>
-      </div>
-      <div className="relative h-1.5 rounded-full bg-zinc-800 overflow-hidden mb-2">
-        <motion.div
-          className="absolute inset-y-0 left-0 rounded-full"
-          style={{ backgroundColor: color }}
-          animate={{ width: `${util}%` }}
-          transition={{ duration: 0.8, ease: "easeInOut" }}
-        />
-      </div>
-      <div className="flex justify-between">
-        <span className="text-[10px] font-mono" style={{ color }}>
-          {Math.round(util)}%
-        </span>
-        <span className="text-[10px] font-mono text-zinc-600">{worker.tests} tests</span>
-      </div>
-    </motion.div>
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+      {workerStats.map((worker) => (
+        <div
+          key={worker.id}
+          className="rounded-lg border p-3"
+          style={{
+            borderColor:
+              worker.utilization > 85
+                ? "rgba(245,158,11,0.3)"
+                : "rgba(16,185,129,0.15)",
+            background: "rgba(9,9,11,0.6)",
+          }}
+        >
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-mono font-bold text-zinc-300">{worker.name}</span>
+            <span
+              className="text-[9px] font-mono px-1.5 py-0.5 rounded"
+              style={{
+                background: "rgba(6,182,212,0.1)",
+                color: "#06b6d4",
+                border: "1px solid rgba(6,182,212,0.2)",
+              }}
+            >
+              {worker.browser}
+            </span>
+          </div>
+
+          {/* Utilization bar */}
+          <div className="h-1.5 rounded-full bg-zinc-800 overflow-hidden mb-2">
+            <motion.div
+              className="h-full rounded-full"
+              animate={{ width: `${worker.utilization}%` }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              style={{
+                background:
+                  worker.utilization > 85
+                    ? "#f59e0b"
+                    : worker.utilization > 60
+                    ? "#10b981"
+                    : "#06b6d4",
+              }}
+            />
+          </div>
+
+          <div className="flex justify-between text-[10px] font-mono">
+            <span className="text-zinc-600">{worker.utilization.toFixed(0)}% CPU</span>
+            <span className="text-zinc-500">{worker.tests} tests</span>
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function AutomationPage() {
-  const [scrollY, setScrollY] = useState(0);
-  const [activeFilter, setActiveFilter] = useState<"all" | "passed" | "failed">("all");
-  const [isRunning, setIsRunning] = useState(true);
+  const t = useTranslations();
   const metrics = useLocalMetrics();
+  const [activeTab, setActiveTab] = useState<"suites" | "workers" | "coverage">("suites");
 
-  useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const totalPassed = TEST_SUITES.reduce((a, s) => a + s.passed, 0);
-  const totalFailed = TEST_SUITES.reduce((a, s) => a + s.failed, 0);
-  const totalSkipped = TEST_SUITES.reduce((a, s) => a + s.skipped, 0);
-  const totalTests = totalPassed + totalFailed + totalSkipped;
-  const passRate = totalTests > 0 ? ((totalPassed / totalTests) * 100).toFixed(1) : "0.0";
-
-  const filteredSuites = TEST_SUITES.filter((s) => {
-    if (activeFilter === "all") return true;
-    return s.status === activeFilter;
-  });
+  const totalTests = TEST_SUITES.reduce(
+    (acc, s) => acc + s.passed + s.failed + s.skipped,
+    0
+  );
+  const totalPassed = TEST_SUITES.reduce((acc, s) => acc + s.passed, 0);
+  const totalFailed = TEST_SUITES.reduce((acc, s) => acc + s.failed, 0);
+  const overallPassRate = totalTests > 0 ? (totalPassed / totalTests) * 100 : 0;
 
   return (
-    <div className="min-h-screen">
-      {/* Hero section with 3D helix */}
-      <section className="relative h-[60vh] min-h-[480px] overflow-hidden">
-        {/* Canvas */}
-        <div className="absolute inset-0">
-          <Canvas camera={{ position: [0, 0, 8], fov: 50 }}>
-            <BiHelixStream scrollY={scrollY} />
-          </Canvas>
-        </div>
+    <div className="min-h-screen px-4 md:px-8 py-8">
+      {/* Header */}
+      <motion.div
+        variants={staggerContainer}
+        initial="hidden"
+        animate="visible"
+        className="mb-8"
+      >
+        <motion.div variants={fadeInUp} className="flex items-center gap-3 mb-2">
+          <div
+            className="w-2 h-2 rounded-full animate-pulse"
+            style={{ backgroundColor: "#10b981", boxShadow: "0 0 8px #10b981" }}
+          />
+          <span className="text-xs font-mono text-zinc-500 uppercase tracking-widest">
+            High-Throughput Automation Suite
+          </span>
+        </motion.div>
+        <motion.h1
+          variants={fadeInUp}
+          className="text-3xl md:text-4xl font-bold font-mono text-zinc-100"
+        >
+          Playwright{" "}
+          <span style={{ color: "#10b981" }}>Execution</span>{" "}
+          Runner
+        </motion.h1>
+        <motion.p variants={fadeInUp} className="text-sm font-mono text-zinc-500 mt-2">
+          Parallelized test execution across 4 workers · {TEST_SUITES.length} suites ·{" "}
+          {totalTests} total tests
+        </motion.p>
+      </motion.div>
 
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#030303]" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#030303] via-transparent to-[#030303] opacity-60" />
-
-        {/* Hero content */}
-        <div className="relative z-10 h-full flex flex-col justify-center px-8 max-w-4xl">
+      {/* Top metrics bar */}
+      <motion.div
+        variants={staggerContainer}
+        initial="hidden"
+        animate="visible"
+        className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
+      >
+        {[
+          {
+            label: "Total Tests",
+            value: totalTests.toLocaleString("en-US"),
+            icon: <Layers size={16} />,
+            color: "#06b6d4",
+          },
+          {
+            label: "Passed",
+            value: totalPassed.toLocaleString("en-US"),
+            icon: <CheckCircle size={16} />,
+            color: "#10b981",
+          },
+          {
+            label: "Failed",
+            value: totalFailed.toLocaleString("en-US"),
+            icon: <XCircle size={16} />,
+            color: "#ef4444",
+          },
+          {
+            label: "Pass Rate",
+            value: `${overallPassRate.toFixed(1)}%`,
+            icon: <Activity size={16} />,
+            color: overallPassRate > 95 ? "#10b981" : overallPassRate > 80 ? "#f59e0b" : "#ef4444",
+          },
+        ].map((metric) => (
           <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            animate="visible"
-            className="space-y-4"
+            key={metric.label}
+            variants={scaleIn}
+            className="rounded-xl border p-4"
+            style={{
+              borderColor: `${metric.color}33`,
+              background: "rgba(9,9,11,0.7)",
+              backdropFilter: "blur(12px)",
+            }}
           >
-            <motion.div variants={fadeInUp} className="flex items-center gap-2">
-              <div
-                className="w-2 h-2 rounded-full animate-pulse"
-                style={{ backgroundColor: "#10b981", boxShadow: "0 0 8px #10b981" }}
-              />
-              <span className="text-xs font-mono text-emerald-400 uppercase tracking-widest">
-                Playwright Execution Engine — Active
+            <div className="flex items-center gap-2 mb-2" style={{ color: metric.color }}>
+              {metric.icon}
+              <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">
+                {metric.label}
               </span>
-            </motion.div>
-
-            <motion.h1
-              variants={fadeInUp}
-              className="text-4xl md:text-5xl font-bold font-mono"
-              style={{
-                background: "linear-gradient(135deg, #10b981 0%, #06b6d4 50%, #f59e0b 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
-              Automation Suite
-            </motion.h1>
-            <motion.p
-              variants={fadeInUp}
-              className="text-lg font-mono text-zinc-400 max-w-xl"
-            >
-              Veridat Platform — Parallelized QA across 4 workers, 3 browsers
-            </motion.p>
-
-            {/* Live stats bar */}
-            <motion.div
-              variants={fadeInUp}
-              className="flex flex-wrap gap-6 pt-2"
-            >
-              {[
-                { label: "Total Tests", value: totalTests.toLocaleString("en-US"), color: "#06b6d4" },
-                { label: "Passed", value: totalPassed.toLocaleString("en-US"), color: "#10b981" },
-                { label: "Failed", value: totalFailed.toLocaleString("en-US"), color: "#ef4444" },
-                { label: "Pass Rate", value: `${passRate}%`, color: "#10b981" },
-                { label: "Workers", value: "4", color: "#f59e0b" },
-              ].map((stat) => (
-                <div key={stat.label}>
-                  <div
-                    className="text-2xl font-mono font-bold tabular-nums"
-                    style={{ color: stat.color }}
-                  >
-                    {stat.value}
-                  </div>
-                  <div className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest">
-                    {stat.label}
-                  </div>
-                </div>
-              ))}
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Main content */}
-      <section className="px-6 md:px-8 py-12 max-w-7xl mx-auto space-y-12">
-        {/* Worker grid */}
-        <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-60px" }}
-        >
-          <motion.div variants={fadeInUp} className="flex items-center gap-3 mb-6">
-            <Cpu size={16} className="text-cyan-400" />
-            <h2 className="text-sm font-mono font-bold text-zinc-300 uppercase tracking-widest">
-              Parallel Workers
-            </h2>
+            </div>
             <div
-              className="flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded"
-              style={{
-                background: "rgba(16,185,129,0.1)",
-                color: "#10b981",
-                border: "1px solid rgba(16,185,129,0.2)",
-              }}
+              className="text-2xl font-bold font-mono tabular-nums"
+              style={{ color: metric.color }}
             >
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              LIVE
+              {metric.value}
             </div>
           </motion.div>
-          <motion.div
-            variants={staggerContainer}
-            className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3"
+        ))}
+      </motion.div>
+
+      {/* Main content: Helix + Terminal/Suites */}
+      <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-6 mb-8">
+        {/* Helix visualization */}
+        <motion.div
+          variants={scaleIn}
+          initial="hidden"
+          animate="visible"
+          className="rounded-xl border overflow-hidden"
+          style={{
+            borderColor: "rgba(16,185,129,0.15)",
+            background: "rgba(9,9,11,0.6)",
+            height: "600px",
+          }}
+        >
+          <div
+            className="px-3 py-2 border-b text-[10px] font-mono text-zinc-500 uppercase tracking-widest"
+            style={{ borderColor: "rgba(16,185,129,0.1)" }}
           >
-            {WORKERS.map((w) => (
-              <WorkerCard key={w.id} worker={w} />
-            ))}
-          </motion.div>
+            BiHelix Stream
+          </div>
+          <div className="h-[calc(100%-36px)]">
+            <HelixVisualization />
+          </div>
         </motion.div>
 
-        {/* Test suites */}
-        <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-60px" }}
-        >
-          <motion.div
-            variants={fadeInUp}
-            className="flex items-center justify-between mb-6"
-          >
-            <div className="flex items-center gap-3">
-              <Layers size={16} className="text-emerald-400" />
-              <h2 className="text-sm font-mono font-bold text-zinc-300 uppercase tracking-widest">
-                Test Suites — Veridat Platform
-              </h2>
-            </div>
-            <div className="flex items-center gap-2">
-              {(["all", "passed", "failed"] as const).map((f) => (
-                <button
-                  key={f}
-                  onClick={() => setActiveFilter(f)}
-                  className="text-[10px] font-mono px-3 py-1 rounded transition-all"
-                  style={{
-                    background:
-                      activeFilter === f
-                        ? f === "failed"
-                          ? "rgba(239,68,68,0.15)"
-                          : "rgba(16,185,129,0.15)"
-                        : "transparent",
-                    color:
-                      activeFilter === f
-                        ? f === "failed"
-                          ? "#ef4444"
-                          : "#10b981"
-                        : "#52525b",
-                    border: `1px solid ${
-                      activeFilter === f
-                        ? f === "failed"
-                          ? "rgba(239,68,68,0.3)"
-                          : "rgba(16,185,129,0.3)"
-                        : "transparent"
-                    }`,
-                  }}
-                >
-                  {f.toUpperCase()}
-                </button>
-              ))}
-            </div>
-          </motion.div>
-
-          <motion.div variants={staggerContainer} className="space-y-2">
-            <AnimatePresence mode="popLayout">
-              {filteredSuites.map((suite, i) => (
-                <SuiteRow key={suite.id} suite={suite} index={i} />
-              ))}
-            </AnimatePresence>
-          </motion.div>
-        </motion.div>
-
-        {/* Terminal */}
-        <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-60px" }}
-        >
-          <motion.div variants={fadeInUp} className="flex items-center gap-3 mb-6">
-            <Terminal size={16} className="text-emerald-400" />
-            <h2 className="text-sm font-mono font-bold text-zinc-300 uppercase tracking-widest">
-              Live Execution Log
-            </h2>
-            <span className="text-[10px] font-mono text-zinc-600">
-              Playwright v1.44.0 · Veridat QA Suite
-            </span>
-          </motion.div>
-          <motion.div variants={fadeInUp}>
-            <AdvancedTerminal />
-          </motion.div>
-        </motion.div>
-
-        {/* Summary stats */}
-        <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-60px" }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4"
-        >
-          {[
-            {
-              label: "Authentication & OTP",
-              value: "48/51",
-              sub: "tests passing",
-              color: "#10b981",
-              icon: CheckCircle,
-            },
-            {
-              label: "API Contract Tests",
-              value: "134/141",
-              sub: "7 failures",
-              color: "#ef4444",
-              icon: XCircle,
-            },
-            {
-              label: "Stripe & KYC Flows",
-              value: "29/30",
-              sub: "1 failure",
-              color: "#f59e0b",
-              icon: AlertTriangle,
-            },
-            {
-              label: "Security & RBAC",
-              value: "22/22",
-              sub: "all passing",
-              color: "#10b981",
-              icon: CheckCircle,
-            },
-          ].map((card) => (
-            <motion.div
-              key={card.label}
-              variants={scaleIn}
-              className="p-4 rounded-lg"
-              style={{
-                background: "rgba(9,9,11,0.8)",
-                border: `1px solid ${card.color}25`,
-                boxShadow: `0 0 20px ${card.color}08`,
-              }}
-            >
-              <card.icon size={20} style={{ color: card.color }} className="mb-3" />
-              <div
-                className="text-2xl font-mono font-bold tabular-nums mb-1"
-                style={{ color: card.color }}
+        {/* Right panel */}
+        <div className="space-y-6">
+          {/* Tab bar */}
+          <div className="flex gap-2">
+            {(["suites", "workers", "coverage"] as const).map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className="px-4 py-2 rounded-lg text-xs font-mono uppercase tracking-widest transition-all"
+                style={{
+                  background:
+                    activeTab === tab
+                      ? "rgba(16,185,129,0.15)"
+                      : "rgba(9,9,11,0.6)",
+                  color: activeTab === tab ? "#10b981" : "#52525b",
+                  border: `1px solid ${
+                    activeTab === tab
+                      ? "rgba(16,185,129,0.3)"
+                      : "rgba(16,185,129,0.08)"
+                  }`,
+                }}
               >
-                {card.value}
-              </div>
-              <div className="text-xs font-mono text-zinc-400 mb-0.5">{card.label}</div>
-              <div className="text-[10px] font-mono text-zinc-600">{card.sub}</div>
-            </motion.div>
-          ))}
-        </motion.div>
-      </section>
+                {tab}
+              </button>
+            ))}
+          </div>
+
+          {/* Tab content */}
+          <AnimatePresence mode="wait">
+            {activeTab === "suites" && (
+              <motion.div
+                key="suites"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.2 }}
+              >
+                <motion.div
+                  variants={staggerContainer}
+                  initial="hidden"
+                  animate="visible"
+                  className="space-y-2"
+                >
+                  {TEST_SUITES.map((suite, i) => (
+                    <TestSuiteRow key={suite.id} suite={suite} index={i} />
+                  ))}
+                </motion.div>
+              </motion.div>
+            )}
+
+            {activeTab === "workers" && (
+              <motion.div
+                key="workers"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.2 }}
+              >
+                <WorkerGrid />
+              </motion.div>
+            )}
+
+            {activeTab === "coverage" && (
+              <motion.div
+                key="coverage"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.2 }}
+                className="rounded-xl border p-6"
+                style={{
+                  borderColor: "rgba(16,185,129,0.15)",
+                  background: "rgba(9,9,11,0.6)",
+                }}
+              >
+                <div className="space-y-4">
+                  {[
+                    { label: "Statements", value: 94.2, color: "#10b981" },
+                    { label: "Branches", value: 87.6, color: "#06b6d4" },
+                    { label: "Functions", value: 91.3, color: "#f59e0b" },
+                    { label: "Lines", value: 93.8, color: "#10b981" },
+                  ].map((cov) => (
+                    <div key={cov.label}>
+                      <div className="flex justify-between text-xs font-mono mb-1">
+                        <span className="text-zinc-400">{cov.label}</span>
+                        <span style={{ color: cov.color }}>{cov.value}%</span>
+                      </div>
+                      <div className="h-2 rounded-full bg-zinc-800 overflow-hidden">
+                        <motion.div
+                          className="h-full rounded-full"
+                          initial={{ width: 0 }}
+                          animate={{ width: `${cov.value}%` }}
+                          transition={{ duration: 1, ease: "easeOut" }}
+                          style={{ background: cov.color }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+
+      {/* Advanced Terminal */}
+      <motion.div
+        variants={fadeInUp}
+        initial="hidden"
+        animate="visible"
+      >
+        <div className="flex items-center gap-2 mb-3">
+          <Terminal size={14} className="text-emerald-400" />
+          <span className="text-xs font-mono text-zinc-500 uppercase tracking-widest">
+            Live Execution Log
+          </span>
+        </div>
+        <AdvancedTerminal />
+      </motion.div>
     </div>
   );
 }

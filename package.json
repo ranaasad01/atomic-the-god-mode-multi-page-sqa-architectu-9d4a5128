@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "next": "15.4.10",
+    "next": "14.2.29",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-is": "^18.3.1",
@@ -17,15 +17,16 @@
     "clsx": "^2.1.1",
     "framer-motion": "^11.0.0",
     "next-intl": "^3.26.0",
-    "@playwright/test": "latest",
-    "@react-three/fiber": "latest",
-    "three": "latest",
+    "@react-three/fiber": "^8.17.10",
+    "three": "^0.167.1",
     "zustand": "^4.5.0"
   },
   "devDependencies": {
+    "@playwright/test": "latest",
     "@types/node": "^20.14.0",
     "@types/react": "^18.3.0",
     "@types/react-dom": "^18.3.0",
+    "@types/three": "^0.167.1",
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.17",
